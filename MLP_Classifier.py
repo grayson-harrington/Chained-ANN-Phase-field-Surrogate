@@ -56,8 +56,8 @@ class MLPClassifier:
         # might be nice to make div_factor a param
         self.scheduler = torch.optim.lr_scheduler.OneCycleLR(
             self.optimizer,
-            max_lr=100 * optimizer_params["init_lr"],
-            div_factor=100,
+            max_lr=50 * optimizer_params["init_lr"],
+            div_factor=50,
             three_phase=True,
             total_steps=scheduler_params["n_epochs"],
         )
@@ -204,14 +204,14 @@ class Net(torch.nn.Module):
             # initialize with a smarter strategy
             torch.nn.init.xavier_normal_(lay.weight)
             # now apply weight normalization
-            lay = torch.nn.utils.weight_norm(lay)
             # add it to our inputs
             self.hidden_layers.append(lay)
             n_input = hidden_shape[i]
 
-        # also make predictor layer and initialize that
+        # also make predictor layer and initialize that, then apply weight norm
         self.predict = torch.nn.Linear(n_input, n_output)
         torch.nn.init.xavier_normal_(self.predict.weight)
+        self.predict = torch.nn.utils.weight_norm(self.predict)
 
         # number of parameters in model
         self.n_params = sum(p.numel() for p in self.parameters() if p.requires_grad)

@@ -7,7 +7,7 @@ from sklearn.metrics import mean_absolute_error
 
 n_epochs = 50
 
-train_model = True
+train_model = False
 save_model = True
 model_path = "_Classification/_classification_model"
 
@@ -22,7 +22,7 @@ def main():
         test_location="datasets/PS-Linkage_test.hdf5",
         hidden_shape=(5,),
         batch_size=8,  # smaller batches overfit less
-        optimizer_params={"init_lr": 0.0005, "decay": 1e-02},
+        optimizer_params={"init_lr": 0.001, "decay": 1e-02},
         scheduler_params={"n_epochs": n_epochs},
     )
 

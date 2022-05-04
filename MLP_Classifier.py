@@ -13,20 +13,32 @@ import numpy as np
 
 
 class MLPClassifier:
-    def __init__(self, train_location, validate_location, test_location,
-                 optimizer_params,
-                 cos_anneal_params,
-                 hidden_shape=(18, 18, 18), batch_size=64):
+    def __init__(
+        self,
+        train_location,
+        validate_location,
+        test_location,
+        optimizer_params,
+        scheduler_params,
+        hidden_shape=(18, 18, 18),
+        batch_size=64,
+    ):
 
         self.batch_size = batch_size
 
         # load in train and validation datasets
-        self.datasets = CDatasetsGenerator(train_location,
-                                           validate_location,
-                                           test_location)
-        self.loader_train = DataLoader(self.datasets.train, batch_size=batch_size, shuffle=True)
-        self.loader_validate = DataLoader(self.datasets.validate, batch_size=batch_size, shuffle=True)
-        self.loader_test = DataLoader(self.datasets.test, batch_size=batch_size, shuffle=True)
+        self.datasets = CDatasetsGenerator(
+            train_location, validate_location, test_location
+        )
+        self.loader_train = DataLoader(
+            self.datasets.train, batch_size=batch_size, shuffle=True
+        )
+        self.loader_validate = DataLoader(
+            self.datasets.validate, batch_size=batch_size, shuffle=True
+        )
+        self.loader_test = DataLoader(
+            self.datasets.test, batch_size=batch_size, shuffle=True
+        )
 
         # create neural net
         n_input = len(self.datasets.train.input[0])
@@ -38,19 +50,25 @@ class MLPClassifier:
         print()
         print(self.net)
         print()
-        print("number of parameters: "+str(self.n_params))
+        print("number of parameters: " + str(self.n_params))
 
         # Adam optimizer for initial learning rate and gradient descent
-        self.optimizer = torch.optim.Adam(self.net.parameters(),
-                                          lr=optimizer_params["lr"],
-                                          weight_decay=optimizer_params["decay"],)
+        self.optimizer = torch.optim.AdamW(
+            self.net.parameters(),
+            lr=optimizer_params["init_lr"],
+            weight_decay=optimizer_params["decay"],
+        )
 
-        self.loss_func = torch.nn.BCELoss()  # Binary Cross-Entropy Loss
+        self.loss_func = torch.nn.BCELoss()
 
-        # cosine annealing learning rate
-        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer,
-                                                                    T_max=cos_anneal_params["T_max"],
-                                                                    eta_min=cos_anneal_params["eta_min"])
+        # might be nice to make div_factor a param
+        self.scheduler = torch.optim.lr_scheduler.OneCycleLR(
+            self.optimizer,
+            max_lr=100 * optimizer_params["init_lr"],
+            div_factor=100,
+            three_phase=True,
+            total_steps=scheduler_params["n_epochs"],
+        )
 
     def fit(self, n_epochs):
         # train net
@@ -62,22 +80,24 @@ class MLPClassifier:
         v_err = np.zeros(len(epochs))
 
         print()
-        print(f'Epoch\tTrain Loss\tValidation Loss')
-        print('-' * 40)
+        print(f"Epoch\tTrain Loss\tValidation Loss")
+        print("-" * 40)
         for epoch in epochs:
 
+            self.net.train()
             loss, err = self.run_pass(DatasetType.TRAIN)
             t_loss[epoch] = loss
             t_err[epoch] = err
 
+            self.net.eval()
             loss, err = self.run_pass(DatasetType.VALIDATE)
             v_loss[epoch] = loss
             v_err[epoch] = err
 
-            self.cosine_annealing_lr()
+            self.scheduler.step()
 
             if epoch % 2 == 0:
-                print(f'{epoch:4d}\t{t_loss[epoch]:.4f}\t\t{v_loss[epoch]:.4f}')
+                print(f"{epoch:4d}\t{t_loss[epoch]:.4f}\t\t{v_loss[epoch]:.4f}")
 
         return t_loss, t_err, v_loss, v_err
 
@@ -96,7 +116,7 @@ class MLPClassifier:
 
             if dataset_type is DatasetType.TRAIN:
                 loss = self.loss_func(y_pred, y)  # must be (1. nn output, 2. target)
-                running_loss += loss.data.numpy() / n_batches
+                running_loss += loss.data.numpy() * X.shape[0]
 
                 self.optimizer.zero_grad()  # clear gradients for next train
                 loss.backward()  # back propagation, compute gradients
@@ -104,14 +124,11 @@ class MLPClassifier:
             else:
                 with torch.no_grad():
                     loss = self.loss_func(y_pred, y)
-                    running_loss += loss.data.numpy() / n_batches
+                    running_loss += loss.data.numpy() * X.shape[0]
 
         _, mean_acc, _, _ = self.model_accuracy(dataset_type=dataset_type)
 
-        return running_loss, mean_acc
-
-    def cosine_annealing_lr(self):
-        self.scheduler.step()
+        return running_loss / len(loader.dataset), mean_acc
 
     def predict(self, dataset_type=DatasetType.TRAIN):
         loader = self.get_loader(dataset_type)
@@ -125,7 +142,12 @@ class MLPClassifier:
 
         return y_pred
 
-    def model_accuracy(self, dataset_type=DatasetType.TRAIN, accuracy_measure=mean_absolute_error, print_report=False):
+    def model_accuracy(
+        self,
+        dataset_type=DatasetType.TRAIN,
+        accuracy_measure=mean_absolute_error,
+        print_report=False,
+    ):
 
         loader = self.get_loader(dataset_type)
         if loader is None:
@@ -136,23 +158,25 @@ class MLPClassifier:
 
         # This is for classification purposes, round to nearest integer before accuracy measure
         y_pred = np.round(y_pred)
-        
-        acc = accuracy_measure(y, y_pred, multioutput='raw_values')
+
+        acc = accuracy_measure(y, y_pred, multioutput="raw_values")
         mean = np.mean(acc)
         std = np.std(acc)
 
         if print_report:
             print()
-            print("-"*25)
+            print("-" * 25)
             print()
             print(dataset_type)
-            print(classification_report(y, y_pred))
+            print(classification_report(y, y_pred, digits=3))
             print()
             print(confusion_matrix(y, y_pred))
 
         return acc, mean, std, y_pred
 
-    def output_correlation(self, dataset_type=DatasetType.TRAIN, accuracy_measure=r2_score):
+    def output_correlation(
+        self, dataset_type=DatasetType.TRAIN, accuracy_measure=r2_score
+    ):
 
         loader = self.get_loader(dataset_type)
         if loader is None:
@@ -174,7 +198,7 @@ class MLPClassifier:
         return loader
 
     def save_model(self, file_path):
-        with open(file_path+".p", "wb") as f:
+        with open(file_path + ".p", "wb") as f:
             pickle.dump(self, f)
 
 
@@ -185,15 +209,28 @@ class Net(torch.nn.Module):
 
         self.hidden_layers = torch.nn.ModuleList()
         for i in range(len(hidden_shape)):
-            self.hidden_layers.append(torch.nn.Linear(n_input, hidden_shape[i]))
+            # make a new FC layer
+            lay = torch.nn.Linear(n_input, hidden_shape[i])
+            # initialize with a smarter strategy
+            torch.nn.init.xavier_normal_(lay.weight)
+            # now apply weight normalization
+            lay = torch.nn.utils.weight_norm(lay)
+            # add it to our inputs
+            self.hidden_layers.append(lay)
             n_input = hidden_shape[i]
+
+        # also make predictor layer and initialize that
         self.predict = torch.nn.Linear(n_input, n_output)
+        torch.nn.init.xavier_normal_(self.predict.weight)
 
         # number of parameters in model
         self.n_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
 
     def forward(self, x):
         for i in range(len(self.hidden_layers)):
-            x = torch.relu(self.hidden_layers[i](x))  # activation function for hidden layers
-        x = torch.sigmoid(self.predict(x))  # sigmoid output to keep between 0-1
+            x = self.hidden_layers[i](x)
+            x = torch.nn.functional.relu(x)
+        x = self.predict(x)
+        # sigmoid output to keep between 0-1
+        x = torch.sigmoid(x)
         return x

@@ -5,39 +5,40 @@ from MLP_Classifier import MLPClassifier, DatasetType
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
 
-n_epochs = 30
+n_epochs = 50
 
-train_model = False
+train_model = True
 save_model = True
-model_path = "_classification_model"
+model_path = "_Classification/_classification_model"
 
 
 def main():
     print()
     print("Creating Machine Learning Model")
 
-    nn_model = MLPClassifier(train_location="datasets/PS-Linkage_train.hdf5",
-                             validate_location="datasets/PS-Linkage_validate.hdf5",
-                             test_location="datasets/PS-Linkage_test.hdf5",
-
-                             hidden_shape=(5,),
-                             batch_size=16,  # batch size of 16 is magic number
-
-                             optimizer_params={"lr": 0.005,
-                                               "decay": 1E-05},
-
-                             cos_anneal_params={"T_max": n_epochs,
-                                                "eta_min": 1e-07})
+    nn_model = MLPClassifier(
+        train_location="datasets/train.hdf5",
+        validate_location="datasets/validate.hdf5",
+        test_location="datasets/test.hdf5",
+        hidden_shape=(5,),
+        batch_size=8,  # smaller batches overfit less
+        optimizer_params={"init_lr": 0.0005, "decay": 1e-02},
+        scheduler_params={"n_epochs": n_epochs},
+    )
 
     t_loss, t_err, v_loss, v_err = nn_model.fit(n_epochs=n_epochs)
 
-    nn_model.model_accuracy(dataset_type=DatasetType.TRAIN,
-                            accuracy_measure=mean_absolute_error,
-                            print_report=True)
+    nn_model.model_accuracy(
+        dataset_type=DatasetType.TRAIN,
+        accuracy_measure=mean_absolute_error,
+        print_report=True,
+    )
 
-    nn_model.model_accuracy(dataset_type=DatasetType.VALIDATE,
-                            accuracy_measure=mean_absolute_error,
-                            print_report=True)
+    nn_model.model_accuracy(
+        dataset_type=DatasetType.VALIDATE,
+        accuracy_measure=mean_absolute_error,
+        print_report=True,
+    )
 
     if save_model:
         nn_model.save_model(model_path)
@@ -53,8 +54,8 @@ def main():
     ax.legend()
 
     fig2, ax2 = plt.subplots()
-    ax2.plot(list(range(n_epochs)), t_err, '--', label="Training Error")
-    ax2.plot(list(range(n_epochs)), v_err, '--', label="Validation Error")
+    ax2.plot(list(range(n_epochs)), t_err, "--", label="Training Error")
+    ax2.plot(list(range(n_epochs)), v_err, "--", label="Validation Error")
     ax2.set_xlabel("Epoch", fontsize=14)
     ax2.set_ylabel("Model Error", fontsize=14)
     ax2.set_title("Homogeneous/Heterogeneous Classification Error", fontsize=16)
@@ -63,7 +64,7 @@ def main():
     plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if train_model:
         main()
 
@@ -75,12 +76,18 @@ if __name__ == '__main__':
         print("-" * 5 + "Check Model Save" + "-" * 5)
         print("-" * 25)
 
-        model.model_accuracy(dataset_type=DatasetType.TRAIN,
-                             accuracy_measure=mean_absolute_error,
-                             print_report=True)
-        model.model_accuracy(dataset_type=DatasetType.VALIDATE,
-                             accuracy_measure=mean_absolute_error,
-                             print_report=True)
-        model.model_accuracy(dataset_type=DatasetType.TEST,
-                             accuracy_measure=mean_absolute_error,
-                             print_report=True)
+        model.model_accuracy(
+            dataset_type=DatasetType.TRAIN,
+            accuracy_measure=mean_absolute_error,
+            print_report=True,
+        )
+        model.model_accuracy(
+            dataset_type=DatasetType.VALIDATE,
+            accuracy_measure=mean_absolute_error,
+            print_report=True,
+        )
+        # model.model_accuracy(
+        #     dataset_type=DatasetType.TEST,
+        #     accuracy_measure=mean_absolute_error,
+        #     print_report=True,
+        # )

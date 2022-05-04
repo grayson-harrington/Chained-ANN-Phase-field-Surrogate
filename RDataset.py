@@ -32,21 +32,21 @@ class RDatasetsGenerator:
         # load in training data
         with h5py.File(train_location, 'r') as f:
             print(list(f.keys()))
-            t_output = f["scores"][...][:, :5]
-            t_input = f["parameters"][...]
-            t_homonohomo = f["homonohomo"][...]
+            t_output = f["pc_scores"][...][:, :5]
+            t_input = f["parameters"][...][:, 0:18]
+            t_homonohomo = f["n_phases"][...] - 1
 
         # load in training data
         with h5py.File(validate_location, 'r') as f:
-            v_output = f["scores"][...][:, :5]
-            v_input = f["parameters"][...]
-            v_homonohomo = f["homonohomo"][...]
+            v_output = f["pc_scores"][...][:, :5]
+            v_input = f["parameters"][...][:, 0:18]
+            v_homonohomo = f["n_phases"][...] - 1
 
         # load in test data
         with h5py.File(test_location, 'r') as f:
-            tst_output = f["scores"][...][:, :5]
-            tst_input = f["parameters"][...]
-            tst_homonohomo = f["homonohomo"][...]
+            tst_output = f["pc_scores"][...][:, :5]
+            tst_input = f["parameters"][...][:, 0:18]
+            tst_homonohomo = f["n_phases"][...] - 1
 
         # Prepare Data for Training
         #  remove all single phase samples as this is a heterogeneous model

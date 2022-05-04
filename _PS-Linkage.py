@@ -10,12 +10,12 @@ from sklearn.metrics import mean_absolute_error, classification_report, confusio
 
 import matplotlib.pyplot as plt
 
-classification_file_path = "_classification_model"
-regression_file_path = "_regression_model"
+classification_file_path = "_Classification/_classification_model"
+regression_file_path = "_Regression/_regression_model"
 
-train_location = "datasets/PS-Linkage_train.hdf5"
-validate_location = "datasets/PS-Linkage_validate.hdf5"
-test_location = "datasets/PS-Linkage_test.hdf5"
+train_location = "datasets/train.hdf5"
+validate_location = "datasets/validate.hdf5"
+test_location = "datasets/test.hdf5"
 
 dataset = DatasetType.TEST
 dataset_compare = DatasetType.TRAIN
@@ -25,27 +25,27 @@ n_scores = 5
 def main():
     # load in train data
     with h5py.File(train_location, 'r') as f:
-        train_classes = f["homonohomo"][...]
-        train_params = f["parameters"][...]
-        train_scores = f["scores"][...][:, :5]
-        train_corrs = f["corrs"][...]
-        train_micros = f["micros"][...]
+        train_classes = f["n_phases"][...] - 1
+        train_params = f["parameters"][...][:, 0:18]
+        train_scores = f["pc_scores"][...][:, :5]
+        train_corrs = f["correlations"][...]
+        train_micros = f["curated_micros"][...]
 
     # load in validation data
     with h5py.File(validate_location, 'r') as f:
-        validate_classes = f["homonohomo"][...]
-        validate_params = f["parameters"][...]
-        validate_scores = f["scores"][...][:, :5]
-        validate_corrs = f["corrs"][...]
-        validate_micros = f["micros"][...]
+        validate_classes = f["n_phases"][...] - 1
+        validate_params = f["parameters"][...][:, 0:18]
+        validate_scores = f["pc_scores"][...][:, :5]
+        validate_corrs = f["correlations"][...]
+        validate_micros = f["curated_micros"][...]
 
     # load in test data
     with h5py.File(test_location, 'r') as f:
-        test_classes = f["homonohomo"][...]
-        test_params = f["parameters"][...]
-        test_scores = f["scores"][...][:, :5]
-        test_corrs = f["corrs"][...]
-        test_micros = f["micros"][...]
+        test_classes = f["n_phases"][...] - 1
+        test_params = f["parameters"][...][:, 0:18]
+        test_scores = f["pc_scores"][...][:, :5]
+        test_corrs = f["correlations"][...]
+        test_micros = f["curated_micros"][...]
 
     # get dataset values of interest
     if dataset is DatasetType.TRAIN:
@@ -135,9 +135,9 @@ def main():
     print("NMAE: %.4f" % mae_v_mean)
     print("STDNAE: %.4f" % mae_v_std)
 
-    with h5py.File("PS-Linkage_train_score_predictions.hdf5", "a") as f:
-        train_scores_pred = f['scores_pred'][...]
-        train_scores_true = f['scores'][...]
+    with h5py.File("_Regression/score_predictions_and_truth.hdf5", "a") as f:
+        train_scores_pred = f['train_scores_pred'][...]
+        train_scores_true = f['train_scores'][...]
 
         print(train_scores_pred.shape)
         print(train_scores_true.shape)
@@ -220,12 +220,12 @@ def main():
     # plt.show()
 
     # save file with predicted scores, true scores, parameters, correlations, micros
-    with h5py.File("PS-Linkage_RESULTS_final.hdf5", "a") as f:
-        f.create_dataset("scores_true", data=hetero_scores_true, compression='gzip')
-        f.create_dataset("scores_pred", data=hetero_scores_pred, compression='gzip')
+    with h5py.File("_PS Linkage/PS-Linkage_RESULTS_final.hdf5", "a") as f:
+        f.create_dataset("pc_scores_true", data=hetero_scores_true, compression='gzip')
+        f.create_dataset("pc_scores_pred", data=hetero_scores_pred, compression='gzip')
         f.create_dataset("parameters", data=hetero_params, compression='gzip')
-        f.create_dataset("corrs_true", data=hetero_corrs, compression='gzip')
-        f.create_dataset("micros_true", data=hetero_micros, compression='gzip')
+        f.create_dataset("correlations_true", data=hetero_corrs, compression='gzip')
+        f.create_dataset("curated_micros_true", data=hetero_micros, compression='gzip')
 
 
 if __name__ == '__main__':

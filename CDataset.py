@@ -1,4 +1,3 @@
-
 import h5py
 import numpy as np
 
@@ -13,18 +12,18 @@ class CDatasetsGenerator:
         # load in training data
         with h5py.File(train_location, 'r') as f:
             print(list(f.keys()))
-            t_output = f["homonohomo"][...]
-            t_params = f["parameters"][...]
+            t_output = f["n_phases"][...] - 1
+            t_params = f["parameters"][...][:, 0:18]
 
         # load in training data
         with h5py.File(validate_location, 'r') as f:
-            v_output = f["homonohomo"][...]
-            v_params = f["parameters"][...]
+            v_output = f["n_phases"][...] - 1
+            v_params = f["parameters"][...][:, 0:18]
 
         # load in test data
         with h5py.File(test_location, 'r') as f:
-            tst_output = f["homonohomo"][...]
-            tst_params = f["parameters"][...]
+            tst_output = f["n_phases"][...] - 1
+            tst_params = f["parameters"][...][:, 0:18]
 
         # Prepare Data for Training
         # Normalize input based on training mean = 0, std = 1

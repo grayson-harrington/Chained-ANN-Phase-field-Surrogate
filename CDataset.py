@@ -10,20 +10,20 @@ from torch.utils.data.dataset import T_co
 class CDatasetsGenerator:
     def __init__(self, train_location, validate_location, test_location):
         # load in training data
-        with h5py.File(train_location, 'r') as f:
+        with h5py.File(train_location, "r") as f:
             print(list(f.keys()))
-            t_output = f["n_phases"][...] - 1
-            t_params = f["parameters"][...][:, 0:18]
+            t_output = f["homonohomo"][...]
+            t_params = f["parameters"][...]
 
         # load in training data
-        with h5py.File(validate_location, 'r') as f:
-            v_output = f["n_phases"][...] - 1
-            v_params = f["parameters"][...][:, 0:18]
+        with h5py.File(validate_location, "r") as f:
+            v_output = f["homonohomo"][...]
+            v_params = f["parameters"][...]
 
         # load in test data
-        with h5py.File(test_location, 'r') as f:
-            tst_output = f["n_phases"][...] - 1
-            tst_params = f["parameters"][...][:, 0:18]
+        with h5py.File(test_location, "r") as f:
+            tst_output = f["homonohomo"][...]
+            tst_params = f["parameters"][...]
 
         # Prepare Data for Training
         # Normalize input based on training mean = 0, std = 1

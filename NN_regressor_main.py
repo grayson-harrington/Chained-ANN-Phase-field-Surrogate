@@ -21,9 +21,9 @@ def main():
     print("Creating Machine Learning Model")
 
     NN_model = MLPRegressor(
-        train_location="datasets/train.hdf5",
-        validate_location="datasets/validate.hdf5",
-        test_location="datasets/test.hdf5",
+        train_location="datasets/PS-Linkage_train.hdf5",
+        validate_location="datasets/PS-Linkage_validate.hdf5",
+        test_location="datasets/PS-Linkage_test.hdf5",
         hidden_shape=(12, 12, 12),
         batch_size=64,  # larger batch size tends to give better results
         dropout_ratio=0.01,
@@ -77,22 +77,14 @@ def main():
     fig, axs = plt.subplots(rows, cols)
     for i in range(n_pc_scores):
 
-        train_y, train_y_pred, r2_train = NN_model.output_correlation(
-            output_index=i, dataset_type=DatasetType.TRAIN
-        )
-        validate_y, validate_y_pred, _ = NN_model.output_correlation(
-            output_index=i, dataset_type=DatasetType.VALIDATE
-        )
+        train_y, train_y_pred, r2_train = NN_model.output_correlation(output_index=i, dataset_type=DatasetType.TRAIN)
+        validate_y, validate_y_pred, _ = NN_model.output_correlation(output_index=i, dataset_type=DatasetType.VALIDATE)
 
         col = i % cols
         row = math.floor(i / cols)
         axs[col].set_box_aspect(1)
-        axs[col].scatter(
-            train_y, train_y_pred, color="red", alpha=0.5, label="Training"
-        )
-        axs[col].scatter(
-            validate_y, validate_y_pred, color="blue", alpha=0.5, label="Validation"
-        )
+        axs[col].scatter(train_y, train_y_pred, color="red", alpha=0.5, label="Training")
+        axs[col].scatter(validate_y, validate_y_pred, color="blue", alpha=0.5, label="Validation")
         axs[col].plot([-1, 1], [-1, 1], "k")
 
         axs[col].set_xlim(left=-1.1, right=1.1)
@@ -112,9 +104,7 @@ def main():
     fig.text(0.5, 0.05, "Truth", ha="center", fontsize=10)
     fig.text(0.05, 0.5, "Prediction", va="center", rotation="vertical", fontsize=10)
 
-    fig.text(
-        0.5, 0.95, "Heterogeneous Phase PC Score Parity Plots", ha="center", fontsize=14
-    )
+    fig.text(0.5, 0.95, "Heterogeneous Phase PC Score Parity Plots", ha="center", fontsize=14)
 
     # plt.show()
 
@@ -171,15 +161,11 @@ if __name__ == "__main__":
         fig, axs = plt.subplots(rows, cols)
         for i in range(n_pc_scores):
 
-            train_y, train_y_pred, _ = model.output_correlation(
-                output_index=i, dataset_type=DatasetType.TRAIN
-            )
+            train_y, train_y_pred, _ = model.output_correlation(output_index=i, dataset_type=DatasetType.TRAIN)
             validate_y, validate_y_pred, _ = model.output_correlation(
                 output_index=i, dataset_type=DatasetType.VALIDATE
             )
-            test_y, test_y_pred, _ = model.output_correlation(
-                output_index=i, dataset_type=DatasetType.TEST
-            )
+            test_y, test_y_pred, _ = model.output_correlation(output_index=i, dataset_type=DatasetType.TEST)
 
             train_scores_pred[:, i] = train_y_pred
             train_scores[:, i] = train_y
@@ -191,9 +177,7 @@ if __name__ == "__main__":
             col = i % cols
             row = math.floor(i / cols)
             axs[col].set_box_aspect(1)
-            axs[col].scatter(
-                train_y, train_y_pred, color="red", alpha=0.5, label="Train"
-            )
+            axs[col].scatter(train_y, train_y_pred, color="red", alpha=0.5, label="Train")
             # axs[col].scatter(validate_y, validate_y_pred, color='blue', alpha=0.5, label="Validate")
             axs[col].scatter(test_y, test_y_pred, color="blue", alpha=0.5, label="Test")
             axs[col].plot([-1, 1], [-1, 1], "k")

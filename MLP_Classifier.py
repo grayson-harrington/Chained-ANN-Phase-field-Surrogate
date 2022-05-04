@@ -27,18 +27,10 @@ class MLPClassifier:
         self.batch_size = batch_size
 
         # load in train and validation datasets
-        self.datasets = CDatasetsGenerator(
-            train_location, validate_location, test_location
-        )
-        self.loader_train = DataLoader(
-            self.datasets.train, batch_size=batch_size, shuffle=True
-        )
-        self.loader_validate = DataLoader(
-            self.datasets.validate, batch_size=batch_size, shuffle=True
-        )
-        self.loader_test = DataLoader(
-            self.datasets.test, batch_size=batch_size, shuffle=True
-        )
+        self.datasets = CDatasetsGenerator(train_location, validate_location, test_location)
+        self.loader_train = DataLoader(self.datasets.train, batch_size=batch_size, shuffle=True)
+        self.loader_validate = DataLoader(self.datasets.validate, batch_size=batch_size, shuffle=True)
+        self.loader_test = DataLoader(self.datasets.test, batch_size=batch_size, shuffle=True)
 
         # create neural net
         n_input = len(self.datasets.train.input[0])
@@ -174,9 +166,7 @@ class MLPClassifier:
 
         return acc, mean, std, y_pred
 
-    def output_correlation(
-        self, dataset_type=DatasetType.TRAIN, accuracy_measure=r2_score
-    ):
+    def output_correlation(self, dataset_type=DatasetType.TRAIN, accuracy_measure=r2_score):
 
         loader = self.get_loader(dataset_type)
         if loader is None:

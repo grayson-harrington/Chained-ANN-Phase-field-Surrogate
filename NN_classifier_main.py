@@ -17,9 +17,9 @@ def main():
     print("Creating Machine Learning Model")
 
     nn_model = MLPClassifier(
-        train_location="datasets/train.hdf5",
-        validate_location="datasets/validate.hdf5",
-        test_location="datasets/test.hdf5",
+        train_location="datasets/PS-Linkage_train.hdf5",
+        validate_location="datasets/PS-Linkage_validate.hdf5",
+        test_location="datasets/PS-Linkage_test.hdf5",
         hidden_shape=(5,),
         batch_size=8,  # smaller batches overfit less
         optimizer_params={"init_lr": 0.0005, "decay": 1e-02},

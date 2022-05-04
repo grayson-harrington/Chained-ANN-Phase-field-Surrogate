@@ -24,7 +24,7 @@ n_scores = 5
 
 def main():
     # load in train data
-    with h5py.File(train_location, 'r') as f:
+    with h5py.File(train_location, "r") as f:
         train_classes = f["n_phases"][...] - 1
         train_params = f["parameters"][...][:, 0:18]
         train_scores = f["pc_scores"][...][:, :5]
@@ -32,7 +32,7 @@ def main():
         train_micros = f["curated_micros"][...]
 
     # load in validation data
-    with h5py.File(validate_location, 'r') as f:
+    with h5py.File(validate_location, "r") as f:
         validate_classes = f["n_phases"][...] - 1
         validate_params = f["parameters"][...][:, 0:18]
         validate_scores = f["pc_scores"][...][:, :5]
@@ -40,7 +40,7 @@ def main():
         validate_micros = f["curated_micros"][...]
 
     # load in test data
-    with h5py.File(test_location, 'r') as f:
+    with h5py.File(test_location, "r") as f:
         test_classes = f["n_phases"][...] - 1
         test_params = f["parameters"][...][:, 0:18]
         test_scores = f["pc_scores"][...][:, :5]
@@ -117,7 +117,7 @@ def main():
     hetero_scores_pred = regression_model.net(hetero_params_norm).detach().numpy()
 
     # Report model accuracy (validation dataset accuracy confirmed)
-    acc = mean_absolute_error(hetero_scores_norm, hetero_scores_pred, multioutput='raw_values')
+    acc = mean_absolute_error(hetero_scores_norm, hetero_scores_pred, multioutput="raw_values")
     mean = np.mean(acc)
     std = np.std(acc)
 
@@ -128,16 +128,17 @@ def main():
 
     # just checking validation set on regression to make sure that all is running as it should be.
     # run regression on new samples and display accuracy with parity plots and NMAE measures
-    _, mae_v_mean, mae_v_std = regression_model.model_accuracy(dataset_type=dataset,
-                                                               accuracy_measure=mean_absolute_error)
+    _, mae_v_mean, mae_v_std = regression_model.model_accuracy(
+        dataset_type=dataset, accuracy_measure=mean_absolute_error
+    )
     print()
     print("PC score prediction accuracy WITHOUT classification error")
     print("NMAE: %.4f" % mae_v_mean)
     print("STDNAE: %.4f" % mae_v_std)
 
     with h5py.File("_Regression/score_predictions_and_truth.hdf5", "a") as f:
-        train_scores_pred = f['train_scores_pred'][...]
-        train_scores_true = f['train_scores'][...]
+        train_scores_pred = f["train_scores_pred"][...]
+        train_scores_true = f["train_scores"][...]
 
         print(train_scores_pred.shape)
         print(train_scores_true.shape)
@@ -151,11 +152,9 @@ def main():
         col = i % cols
         row = math.floor(i / cols)
         axs[col].set_box_aspect(1)
-        axs[col].scatter(train_scores_true[:, i], train_scores_pred[:, i],
-                         color='red', alpha=0.5, label="Train")
-        axs[col].scatter(hetero_scores_norm[:, i], hetero_scores_pred[:, i],
-                         color='blue', alpha=0.5, label="Test")
-        axs[col].plot([-1, 1], [-1, 1], 'k')
+        axs[col].scatter(train_scores_true[:, i], train_scores_pred[:, i], color="red", alpha=0.5, label="Train")
+        axs[col].scatter(hetero_scores_norm[:, i], hetero_scores_pred[:, i], color="blue", alpha=0.5, label="Test")
+        axs[col].plot([-1, 1], [-1, 1], "k")
 
         axs[col].set_xlim(left=-1.1, right=1.1)
         axs[col].set_ylim(bottom=-1.1, top=1.1)
@@ -168,9 +167,9 @@ def main():
             axs[col].tick_params(left=False)
             axs[col].tick_params(labelleft=False)
 
-    fig.text(0.5, 0.05, 'Truth', ha='center', fontsize=12)
-    fig.text(0.05, 0.5, 'Prediction', va='center', rotation='vertical', fontsize=12)
-    fig.text(0.5, 0.95, "PC Score Prediction for Heterogeneous Classified Samples", ha='center', fontsize=14)
+    fig.text(0.5, 0.05, "Truth", ha="center", fontsize=12)
+    fig.text(0.05, 0.5, "Prediction", va="center", rotation="vertical", fontsize=12)
+    fig.text(0.5, 0.95, "PC Score Prediction for Heterogeneous Classified Samples", ha="center", fontsize=14)
 
     # unscale the PC score predictions and compare with truth
     hetero_scores_true = hetero_scores
@@ -189,8 +188,10 @@ def main():
         col = i % cols
         row = math.floor(i / cols)
         axs2[col].set_box_aspect(1)
-        axs2[col].scatter(hetero_scores_train_true[:, i], hetero_scores_train_pred[:, i], color='red', alpha=0.5, label="Train")
-        axs2[col].scatter(hetero_scores_true[:, i], hetero_scores_pred[:, i], color='blue', alpha=0.5, label="Test")
+        axs2[col].scatter(
+            hetero_scores_train_true[:, i], hetero_scores_train_pred[:, i], color="red", alpha=0.5, label="Train"
+        )
+        axs2[col].scatter(hetero_scores_true[:, i], hetero_scores_pred[:, i], color="blue", alpha=0.5, label="Test")
 
         mins1 = np.min(np.concatenate((hetero_scores_true[:, i], hetero_scores_pred[:, i])), axis=None)
         maxs1 = np.max(np.concatenate((hetero_scores_true[:, i], hetero_scores_pred[:, i])), axis=None)
@@ -200,10 +201,10 @@ def main():
         mins = min(mins1, mins2)
         maxs = max(maxs1, maxs2)
 
-        axs2[col].plot([mins, maxs], [mins, maxs], 'k')
+        axs2[col].plot([mins, maxs], [mins, maxs], "k")
 
-        axs2[col].set_xlim(left=mins+mins/10, right=maxs+maxs/10)
-        axs2[col].set_ylim(bottom=mins+mins/10, top=maxs+maxs/10)
+        axs2[col].set_xlim(left=mins + mins / 10, right=maxs + maxs / 10)
+        axs2[col].set_ylim(bottom=mins + mins / 10, top=maxs + maxs / 10)
 
         axs2[col].set_title("PC" + str(i + 1), fontsize=12)
 
@@ -213,22 +214,22 @@ def main():
             axs2[col].tick_params(left=False)
             axs2[col].tick_params(labelleft=False)
 
-    fig2.text(0.5, 0.05, 'Truth', ha='center', fontsize=12)
-    fig2.text(0.05, 0.5, 'Prediction', va='center', rotation='vertical', fontsize=12)
-    fig2.text(0.5, 0.95, "PC Score Prediction for Heterogeneous Classified Samples", ha='center', fontsize=14)
+    fig2.text(0.5, 0.05, "Truth", ha="center", fontsize=12)
+    fig2.text(0.05, 0.5, "Prediction", va="center", rotation="vertical", fontsize=12)
+    fig2.text(0.5, 0.95, "PC Score Prediction for Heterogeneous Classified Samples", ha="center", fontsize=14)
 
     # plt.show()
 
     # save file with predicted scores, true scores, parameters, correlations, micros
     with h5py.File("_PS Linkage/PS-Linkage_RESULTS_final.hdf5", "a") as f:
-        f.create_dataset("pc_scores_true", data=hetero_scores_true, compression='gzip')
-        f.create_dataset("pc_scores_pred", data=hetero_scores_pred, compression='gzip')
-        f.create_dataset("parameters", data=hetero_params, compression='gzip')
-        f.create_dataset("correlations_true", data=hetero_corrs, compression='gzip')
-        f.create_dataset("curated_micros_true", data=hetero_micros, compression='gzip')
+        f.create_dataset("pc_scores_true", data=hetero_scores_true, compression="gzip")
+        f.create_dataset("pc_scores_pred", data=hetero_scores_pred, compression="gzip")
+        f.create_dataset("parameters", data=hetero_params, compression="gzip")
+        f.create_dataset("correlations_true", data=hetero_corrs, compression="gzip")
+        f.create_dataset("curated_micros_true", data=hetero_micros, compression="gzip")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 
     plt.show()

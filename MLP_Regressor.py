@@ -33,22 +33,14 @@ class MLPRegressor:
         self.batch_size = batch_size
 
         # load in train and validation datasets
-        self.datasets = RDatasetsGenerator(
-            train_location, validate_location, test_location
-        )
+        self.datasets = RDatasetsGenerator(train_location, validate_location, test_location)
 
         if batch_size == -1:
             batch_size = len(self.datasets.train.input)
 
-        self.loader_train = DataLoader(
-            self.datasets.train, batch_size=batch_size, shuffle=True
-        )
-        self.loader_validate = DataLoader(
-            self.datasets.validate, batch_size=batch_size, shuffle=False
-        )
-        self.loader_test = DataLoader(
-            self.datasets.test, batch_size=batch_size, shuffle=False
-        )
+        self.loader_train = DataLoader(self.datasets.train, batch_size=batch_size, shuffle=True)
+        self.loader_validate = DataLoader(self.datasets.validate, batch_size=batch_size, shuffle=False)
+        self.loader_test = DataLoader(self.datasets.test, batch_size=batch_size, shuffle=False)
 
         # create neural net
         n_input = len(self.datasets.train.input[0])
@@ -76,9 +68,7 @@ class MLPRegressor:
 
         # Huber loss works the best. play with these parameters
         # delta > 0, reduction = {'none', 'mean', 'sum'}
-        self.loss_func = torch.nn.HuberLoss(
-            reduction=loss_func_params["reduction"], delta=loss_func_params["delta"]
-        )
+        self.loss_func = torch.nn.HuberLoss(reduction=loss_func_params["reduction"], delta=loss_func_params["delta"])
         self.scheduler = torch.optim.lr_scheduler.OneCycleLR(
             self.optimizer,
             max_lr=100 * optimizer_params["init_lr"],
@@ -147,9 +137,7 @@ class MLPRegressor:
 
         return running_loss / len(loader.dataset), mean_acc
 
-    def model_accuracy(
-        self, dataset_type=DatasetType.TRAIN, accuracy_measure=mean_absolute_error
-    ):
+    def model_accuracy(self, dataset_type=DatasetType.TRAIN, accuracy_measure=mean_absolute_error):
 
         loader = self.get_loader(dataset_type)
         if loader is None:
@@ -165,9 +153,7 @@ class MLPRegressor:
         # return acc, mean, std  # TODO make this return value
         return np.absolute(y - y_pred), mean, std
 
-    def output_correlation(
-        self, output_index=0, dataset_type=DatasetType.TRAIN, accuracy_measure=r2_score
-    ):
+    def output_correlation(self, output_index=0, dataset_type=DatasetType.TRAIN, accuracy_measure=r2_score):
 
         loader = self.get_loader(dataset_type)
         if loader is None:

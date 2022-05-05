@@ -89,7 +89,7 @@ dataset_path = "_datasets/dataset.hdf5"
 
 train_model = True
 n_epochs = 50
-cv_folds = 6
+cv_folds = 10
 rnd_seed = 0
 plot_progress = False
 

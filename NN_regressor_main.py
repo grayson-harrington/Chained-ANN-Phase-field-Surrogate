@@ -26,9 +26,12 @@ def cv_regressor(model_input, autocorrelations, n_folds=1, random_seed=0, regres
 
     # loop through cv_splits and build/test model(s)
     split_index = 0
-    cv_model_nmaes = []
-    cv_model_nstds = []
-    cv_model_r2s = []
+    cv_model_nmaes_t = []
+    cv_model_nstds_t = []
+    cv_model_r2s_t = []
+    cv_model_nmaes_tst = []
+    cv_model_nstds_tst = []
+    cv_model_r2s_tst = []
     for train_indices, test_indices in cv_splits:
         split_index = split_index + 1
         print(f"\nCV Split: {split_index}\n")
@@ -51,17 +54,28 @@ def cv_regressor(model_input, autocorrelations, n_folds=1, random_seed=0, regres
         model_output[test_indices] = scores_test
 
         # train regressor based on calculated PC scores
-        nmae, nstd, r2 = build_regressor(model_input, model_output, train_indices, test_indices, **regressor_kwargs)
-        cv_model_nmaes.append(nmae)
-        cv_model_nstds.append(nstd)
-        cv_model_r2s.append(r2)
+        nmae_t, nstd_t, r2_t, nmae_tst, nstd_tst, r2_tst = build_regressor(model_input, model_output,
+                                                                           train_indices, test_indices,
+                                                                           **regressor_kwargs)
+        cv_model_nmaes_t.append(nmae_t)
+        cv_model_nstds_t.append(nstd_t)
+        cv_model_r2s_t.append(r2_t)
+        cv_model_nmaes_tst.append(nmae_tst)
+        cv_model_nstds_tst.append(nstd_tst)
+        cv_model_r2s_tst.append(r2_tst)
 
+    print("\n" * 2)
+    print("CV TRAIN ACCURACY REPORT:")
+    print(f"\tnumber of folds:\t\t{n_folds}")
+    print(f"\tmean nmae by PC score:\t{np.mean(cv_model_nmaes_t, axis=0)}")
+    print(f"\tmean nstd by PC score:\t{np.mean(cv_model_nstds_t, axis=0)}")
+    print(f"\tmean r2 by PC score:\t{np.mean(cv_model_r2s_t, axis=0)}")
     print("\n" * 2)
     print("CV TEST ACCURACY REPORT:")
     print(f"\tnumber of folds:\t\t{n_folds}")
-    print(f"\tmean nmae by PC score:\t{np.mean(cv_model_nmaes, axis=0)}")
-    print(f"\tmean nstd by PC score:\t{np.mean(cv_model_nstds, axis=0)}")
-    print(f"\tmean r2 by PC score:\t{np.mean(cv_model_r2s, axis=0)}")
+    print(f"\tmean nmae by PC score:\t{np.mean(cv_model_nmaes_tst, axis=0)}")
+    print(f"\tmean nstd by PC score:\t{np.mean(cv_model_nstds_tst, axis=0)}")
+    print(f"\tmean r2 by PC score:\t{np.mean(cv_model_r2s_tst, axis=0)}")
     print("\n" * 2)
 
 
@@ -84,20 +98,20 @@ def build_regressor(model_input, model_output, train_indices, test_indices, epoc
     if plot_loss_error:
         plot_metrics(nn_model, t_loss, t_err, tst_loss, tst_err)
 
-    nn_model.model_accuracy(
+    _, nmae_t, nstd_t, r2_t = nn_model.model_accuracy(
         dataset_type=DatasetType.TRAIN,
         accuracy_measure=mean_absolute_error,
         print_report=True,
         unscale_output=True
     )
-    _, nmae, nstd, r2 = nn_model.model_accuracy(
+    _, nmae_tst, nstd_tst, r2_tst = nn_model.model_accuracy(
         dataset_type=DatasetType.TEST,
         accuracy_measure=mean_absolute_error,
         print_report=True,
         unscale_output=True
     )
 
-    return nmae, nstd, r2
+    return nmae_t, nstd_t, r2_t, nmae_tst, nstd_tst, r2_tst
 
 
 def plot_metrics(nn_model, t_loss, t_err, tst_loss, tst_err):

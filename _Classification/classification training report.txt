@@ -1,0 +1,444 @@
+"/Users/graysonharrington/Library/CloudStorage/OneDrive-GeorgiaInstituteofTechnology/_Classes Current/ME 8883 - Mat Info/Research Project/Chained-ANN-Phase-field-Surrogate/venv/bin/python" "/Users/graysonharrington/Library/CloudStorage/OneDrive-GeorgiaInstituteofTechnology/_Classes Current/ME 8883 - Mat Info/Research Project/Chained-ANN-Phase-field-Surrogate/NN_classifier_main.py"
+
+preparing train/test splits
+['correlations', 'curated_micros', 'n_phases', 'parameters', 'pc_scores']
+
+CV Split: 1
+
+Creating Machine Learning Model(s)
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.4193		0.3060
+   2	0.0954		0.0748
+   4	0.0612		0.0522
+   6	0.0662		0.0682
+   8	0.0714		0.0681
+  10	0.0756		0.0935
+  12	0.0731		0.0702
+  14	0.0772		0.0828
+  16	0.0762		0.0559
+  18	0.0684		0.0492
+  20	0.0677		0.0847
+  22	0.0521		0.0407
+  24	0.0397		0.0332
+  26	0.0273		0.0309
+  28	0.0231		0.0247
+  30	0.0224		0.0263
+  32	0.0216		0.0256
+  34	0.0209		0.0241
+  36	0.0202		0.0244
+  38	0.0199		0.0247
+  40	0.0194		0.0244
+  42	0.0191		0.0250
+  44	0.0187		0.0247
+  46	0.0184		0.0248
+  48	0.0183		0.0248
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.997     0.996      6793
+         1.0      0.981     0.975     0.978      1136
+
+    accuracy                          0.994      7929
+   macro avg      0.989     0.986     0.987      7929
+weighted avg      0.994     0.994     0.994      7929
+
+
+[[6772   21]
+ [  28 1108]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.993     0.997     0.995      1357
+         1.0      0.982     0.956     0.969       229
+
+    accuracy                          0.991      1586
+   macro avg      0.987     0.977     0.982      1586
+weighted avg      0.991     0.991     0.991      1586
+
+
+[[1353    4]
+ [  10  219]]
+
+CV Split: 2
+
+Creating Machine Learning Model(s)
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.4366		0.2558
+   2	0.1141		0.0929
+   4	0.0572		0.0504
+   6	0.0642		0.0571
+   8	0.0660		0.0820
+  10	0.0724		0.0618
+  12	0.0676		0.0674
+  14	0.0752		0.0807
+  16	0.0734		0.0746
+  18	0.0657		0.0563
+  20	0.0550		0.0706
+  22	0.0490		0.0459
+  24	0.0357		0.0544
+  26	0.0266		0.0360
+  28	0.0210		0.0350
+  30	0.0202		0.0355
+  32	0.0197		0.0359
+  34	0.0191		0.0359
+  36	0.0188		0.0356
+  38	0.0183		0.0357
+  40	0.0180		0.0365
+  42	0.0175		0.0361
+  44	0.0172		0.0361
+  46	0.0170		0.0361
+  48	0.0169		0.0361
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.997     0.996      6768
+         1.0      0.980     0.976     0.978      1161
+
+    accuracy                          0.994      7929
+   macro avg      0.988     0.986     0.987      7929
+weighted avg      0.994     0.994     0.994      7929
+
+
+[[6745   23]
+ [  28 1133]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.989     0.993     0.991      1382
+         1.0      0.950     0.926     0.938       204
+
+    accuracy                          0.984      1586
+   macro avg      0.969     0.960     0.964      1586
+weighted avg      0.984     0.984     0.984      1586
+
+
+[[1372   10]
+ [  15  189]]
+
+CV Split: 3
+
+Creating Machine Learning Model(s)
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.3742		0.2125
+   2	0.1130		0.1026
+   4	0.0533		0.0563
+   6	0.0593		0.0466
+   8	0.0668		0.0682
+  10	0.0714		0.0894
+  12	0.0729		0.0671
+  14	0.0693		0.0789
+  16	0.0673		0.1168
+  18	0.0649		0.0725
+  20	0.0563		0.0427
+  22	0.0463		0.0442
+  24	0.0358		0.0325
+  26	0.0247		0.0279
+  28	0.0204		0.0236
+  30	0.0193		0.0230
+  32	0.0190		0.0230
+  34	0.0186		0.0216
+  36	0.0180		0.0224
+  38	0.0178		0.0217
+  40	0.0173		0.0221
+  42	0.0169		0.0219
+  44	0.0166		0.0218
+  46	0.0164		0.0218
+  48	0.0163		0.0218
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.998     0.997      6794
+         1.0      0.988     0.979     0.983      1135
+
+    accuracy                          0.995      7929
+   macro avg      0.992     0.988     0.990      7929
+weighted avg      0.995     0.995     0.995      7929
+
+
+[[6780   14]
+ [  24 1111]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.994     0.994     0.994      1356
+         1.0      0.965     0.965     0.965       230
+
+    accuracy                          0.990      1586
+   macro avg      0.980     0.980     0.980      1586
+weighted avg      0.990     0.990     0.990      1586
+
+
+[[1348    8]
+ [   8  222]]
+
+CV Split: 4
+
+Creating Machine Learning Model(s)
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.3720		0.2304
+   2	0.0970		0.0837
+   4	0.0574		0.0519
+   6	0.0627		0.0746
+   8	0.0674		0.0543
+  10	0.0655		0.0558
+  12	0.0725		0.0815
+  14	0.0709		0.0857
+  16	0.0719		0.0773
+  18	0.0639		0.0708
+  20	0.0555		0.0503
+  22	0.0473		0.0712
+  24	0.0359		0.0335
+  26	0.0256		0.0332
+  28	0.0211		0.0276
+  30	0.0203		0.0276
+  32	0.0201		0.0267
+  34	0.0197		0.0263
+  36	0.0191		0.0265
+  38	0.0186		0.0274
+  40	0.0183		0.0263
+  42	0.0179		0.0264
+  44	0.0177		0.0264
+  46	0.0174		0.0264
+  48	0.0173		0.0264
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.998     0.997      6798
+         1.0      0.987     0.978     0.982      1131
+
+    accuracy                          0.995      7929
+   macro avg      0.991     0.988     0.990      7929
+weighted avg      0.995     0.995     0.995      7929
+
+
+[[6783   15]
+ [  25 1106]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.993     0.993     0.993      1352
+         1.0      0.957     0.957     0.957       234
+
+    accuracy                          0.987      1586
+   macro avg      0.975     0.975     0.975      1586
+weighted avg      0.987     0.987     0.987      1586
+
+
+[[1342   10]
+ [  10  224]]
+
+CV Split: 5
+
+Creating Machine Learning Model(s)
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.4174		0.2816
+   2	0.1192		0.0947
+   4	0.0559		0.0596
+   6	0.0609		0.0487
+   8	0.0652		0.0670
+  10	0.0693		0.0705
+  12	0.0717		0.0694
+  14	0.0730		0.0925
+  16	0.0692		0.0798
+  18	0.0680		0.0683
+  20	0.0572		0.0763
+  22	0.0474		0.0399
+  24	0.0321		0.0404
+  26	0.0251		0.0313
+  28	0.0195		0.0290
+  30	0.0186		0.0287
+  32	0.0179		0.0287
+  34	0.0176		0.0276
+  36	0.0166		0.0280
+  38	0.0163		0.0287
+  40	0.0159		0.0282
+  42	0.0155		0.0280
+  44	0.0152		0.0281
+  46	0.0150		0.0281
+  48	0.0148		0.0281
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.997     0.997     0.997      6805
+         1.0      0.984     0.983     0.984      1124
+
+    accuracy                          0.995      7929
+   macro avg      0.991     0.990     0.990      7929
+weighted avg      0.995     0.995     0.995      7929
+
+
+[[6787   18]
+ [  19 1105]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.993     0.993     0.993      1345
+         1.0      0.963     0.959     0.960       241
+
+    accuracy                          0.988      1586
+   macro avg      0.978     0.976     0.977      1586
+weighted avg      0.988     0.988     0.988      1586
+
+
+[[1336    9]
+ [  10  231]]
+
+CV Split: 6
+
+Creating Machine Learning Model(s)
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.5043		0.2859
+   2	0.1161		0.0980
+   4	0.0543		0.0458
+   6	0.0600		0.0513
+   8	0.0699		0.0775
+  10	0.0731		0.0586
+  12	0.0743		0.0676
+  14	0.0731		0.0653
+  16	0.0704		0.0602
+  18	0.0648		0.0530
+  20	0.0588		0.0687
+  22	0.0476		0.0537
+  24	0.0380		0.0361
+  26	0.0272		0.0273
+  28	0.0225		0.0235
+  30	0.0217		0.0225
+  32	0.0212		0.0220
+  34	0.0205		0.0233
+  36	0.0201		0.0226
+  38	0.0195		0.0220
+  40	0.0193		0.0219
+  42	0.0188		0.0221
+  44	0.0185		0.0221
+  46	0.0183		0.0221
+  48	0.0181		0.0221
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.997     0.996      6792
+         1.0      0.982     0.975     0.978      1138
+
+    accuracy                          0.994      7930
+   macro avg      0.989     0.986     0.987      7930
+weighted avg      0.994     0.994     0.994      7930
+
+
+[[6772   20]
+ [  29 1109]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.993     0.997     0.995      1358
+         1.0      0.982     0.960     0.971       227
+
+    accuracy                          0.992      1585
+   macro avg      0.988     0.979     0.983      1585
+weighted avg      0.992     0.992     0.992      1585
+
+
+[[1354    4]
+ [   9  218]]
+
+Process finished with exit code 0

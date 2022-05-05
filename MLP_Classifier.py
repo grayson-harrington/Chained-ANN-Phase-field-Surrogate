@@ -28,6 +28,10 @@ class MLPClassifier:
 
         # load in train and validation datasets
         self.datasets = CDatasetsGenerator(model_input, model_output, train_ind, test_ind)
+
+        if batch_size == -1:
+            batch_size = len(self.datasets.train.input)
+
         self.loader_train = self.datasets.make_loader(DatasetType.TRAIN, batch_size)
         self.loader_test = self.datasets.make_loader(DatasetType.TEST, batch_size)
 
@@ -97,7 +101,6 @@ class MLPClassifier:
         if loader is None:
             return -1
 
-        n_batches = len(loader)
         running_loss = 0
         for ind, batch in enumerate(loader):
             X, y = batch

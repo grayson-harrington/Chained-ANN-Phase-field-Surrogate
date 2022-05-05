@@ -2,9 +2,6 @@ from RDataset import RDatasetsGenerator
 from DatasetType import DatasetType
 
 import torch
-import torch.nn.utils as U
-import torch.nn.functional as F
-from torch.utils.data import DataLoader
 
 from sklearn.metrics import r2_score, mean_absolute_error
 import numpy as np
@@ -12,35 +9,31 @@ import numpy as np
 import pickle
 
 
-def RMSE(x, y):
-    return torch.sqrt(((x - y) ** 2).sum())
-
-
 class MLPRegressor:
     def __init__(
-        self,
-        train_location,
-        validate_location,
-        test_location,
-        optimizer_params,
-        loss_func_params,
-        scheduler_params,
-        hidden_shape=(18, 18, 18),
-        batch_size=-1,
-        dropout_ratio=0.5,
+            self,
+            model_input,
+            model_output,
+            train_ind,
+            test_ind,
+            optimizer_params,
+            loss_func_params,
+            scheduler_params,
+            hidden_shape=(18, 18, 18),
+            batch_size=-1,
+            dropout_ratio=0.5,
     ):
 
         self.batch_size = batch_size
 
         # load in train and validation datasets
-        self.datasets = RDatasetsGenerator(train_location, validate_location, test_location)
+        self.datasets = RDatasetsGenerator(model_input, model_output, train_ind, test_ind)
 
         if batch_size == -1:
             batch_size = len(self.datasets.train.input)
 
-        self.loader_train = DataLoader(self.datasets.train, batch_size=batch_size, shuffle=True)
-        self.loader_validate = DataLoader(self.datasets.validate, batch_size=batch_size, shuffle=False)
-        self.loader_test = DataLoader(self.datasets.test, batch_size=batch_size, shuffle=False)
+        self.loader_train = self.datasets.make_loader(DatasetType.TRAIN, batch_size)
+        self.loader_test = self.datasets.make_loader(DatasetType.TEST, batch_size)
 
         # create neural net
         n_input = len(self.datasets.train.input[0])
@@ -82,10 +75,10 @@ class MLPRegressor:
         # train net
         epochs = range(n_epochs)
         t_loss = np.zeros(len(epochs))
-        v_loss = np.zeros(len(epochs))
+        tst_loss = np.zeros(len(epochs))
 
         t_err = np.zeros(len(epochs))
-        v_err = np.zeros(len(epochs))
+        tst_err = np.zeros(len(epochs))
 
         print()
         print(f"Epoch\tTrain Loss\tValidation Loss")
@@ -95,19 +88,19 @@ class MLPRegressor:
             self.net.train()
             loss, err = self.run_pass(DatasetType.TRAIN)
             t_loss[epoch] = loss
-            t_err[epoch] = err
+            t_err[epoch] = np.mean(err)
 
             self.net.eval()
-            loss, err = self.run_pass(DatasetType.VALIDATE)
-            v_loss[epoch] = loss
-            v_err[epoch] = err
+            loss, err = self.run_pass(DatasetType.TEST)
+            tst_loss[epoch] = loss
+            tst_err[epoch] = np.mean(err)
 
             self.scheduler.step()
 
             if epoch % 5 == 0:
-                print(f"{epoch:4d}\t{t_loss[epoch]:.4e}\t\t{v_loss[epoch]:.4e}")
+                print(f"{epoch:4d}\t{t_loss[epoch]:.4e}\t\t{tst_loss[epoch]:.4e}")
 
-        return t_loss, t_err, v_loss, v_err
+        return t_loss, t_err, tst_loss, tst_err
 
     def run_pass(self, dataset_type):
         loader = self.get_loader(dataset_type)
@@ -133,11 +126,34 @@ class MLPRegressor:
                     loss = self.loss_func(y_pred, y)
                     running_loss += loss.data.numpy() * X.shape[0]
 
-        _, mean_acc, _ = self.model_accuracy(dataset_type=dataset_type)
+        _, mean_acc, _, _ = self.model_accuracy(dataset_type=dataset_type)
 
         return running_loss / len(loader.dataset), mean_acc
 
-    def model_accuracy(self, dataset_type=DatasetType.TRAIN, accuracy_measure=mean_absolute_error):
+    # Calculate nMAE and std for each PC score
+    def nMAE_nSTD_r2(self, truth, pred, print_metrics=False):
+        # determine the normalization factors
+        norm_denom = np.mean(np.abs(truth), axis=0)
+
+        # calculate normalized absolute error for each value
+        nae = np.abs(truth - pred) / norm_denom
+
+        # calculate nMAE
+        nmae = np.mean(nae, axis=0)
+        nstd = np.std(nae, axis=0)
+
+        # r2
+        r2 = [r2_score(truth[:, i], pred[:, i]) for i in range(5)]
+
+        if print_metrics:
+            print("nmae:\t" + str(nmae))
+            print("nstd:\t" + str(nstd))
+            print("r2:\t" + str(r2))
+
+        return nae, nmae, nstd, r2
+
+    def model_accuracy(self, dataset_type=DatasetType.TRAIN, accuracy_measure=mean_absolute_error,
+                       print_report=False, unscale_output=False):
 
         loader = self.get_loader(dataset_type)
         if loader is None:
@@ -146,21 +162,30 @@ class MLPRegressor:
         y = loader.dataset.output.detach().numpy()
         y_pred = self.net(loader.dataset.input).detach().numpy()
 
-        acc = accuracy_measure(y, y_pred, multioutput="raw_values")
-        mean = np.mean(acc)
-        std = np.std(acc)
+        if unscale_output:
+            y = self.datasets.undo_output_normalization(y)
+            y_pred = self.datasets.undo_output_normalization(y_pred)
 
-        # return acc, mean, std  # TODO make this return value
-        return np.absolute(y - y_pred), mean, std
+        if print_report:
+            print(f"\n{dataset_type}")
+        nae, nmae, nstd, r2 = self.nMAE_nSTD_r2(y, y_pred, print_metrics=print_report)
 
-    def output_correlation(self, output_index=0, dataset_type=DatasetType.TRAIN, accuracy_measure=r2_score):
+        # return acc, mean, std
+        return nae, nmae, nstd, r2
+
+    def output_correlation(self, output_index=0, dataset_type=DatasetType.TRAIN, accuracy_measure=r2_score,
+                           unscale_output=True):
 
         loader = self.get_loader(dataset_type)
         if loader is None:
             return -1
 
-        y = loader.dataset.output.detach().numpy()[:, output_index]
-        y_pred = self.net(loader.dataset.input).detach().numpy()[:, output_index]
+        y = loader.dataset.output.detach().numpy()
+        y_pred = self.net(loader.dataset.input).detach().numpy()
+
+        if unscale_output:
+            y = self.datasets.undo_output_normalization(y)[:, output_index]
+            y_pred = self.datasets.undo_output_normalization(y_pred)[:, output_index]
 
         return y, y_pred, accuracy_measure(y, y_pred)
 
@@ -168,8 +193,6 @@ class MLPRegressor:
         loader = None
         if dataset_type is DatasetType.TRAIN:
             loader = self.loader_train
-        elif dataset_type is DatasetType.VALIDATE:
-            loader = self.loader_validate
         elif dataset_type is DatasetType.TEST:
             loader = self.loader_test
         return loader

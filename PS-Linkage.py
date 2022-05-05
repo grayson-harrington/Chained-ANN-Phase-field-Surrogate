@@ -163,9 +163,6 @@ def main():
 
         if i == 0:
             axs[col].legend()
-        if col != 0:
-            axs[col].tick_params(left=False)
-            axs[col].tick_params(labelleft=False)
 
     fig.text(0.5, 0.05, "Truth", ha="center", fontsize=12)
     fig.text(0.05, 0.5, "Prediction", va="center", rotation="vertical", fontsize=12)

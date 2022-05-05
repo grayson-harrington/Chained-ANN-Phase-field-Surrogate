@@ -1,8 +1,9 @@
-import h5py
 import numpy as np
 
+from DatasetType import DatasetType
+
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.dataset import T_co
 
 
@@ -28,66 +29,36 @@ def from_range_to_range(mat, src_min, src_max, dst_min, dst_max):
 
 # create train and validation datasets to be used by data loaders
 class RDatasetsGenerator:
-    def __init__(self, train_location, validate_location, test_location):
-        # load in training data
-        with h5py.File(train_location, "r") as f:
-            print(list(f.keys()))
-            t_output = f["pc_scores"][...][:, :5]
-            t_input = f["parameters"][...][:, 0:18]
-            t_homonohomo = f["n_phases"][...]-1
+    def __init__(self, data_input, data_output, train_indices, test_indices):
 
         # load in training data
-        with h5py.File(validate_location, "r") as f:
-            v_output = f["pc_scores"][...][:, :5]
-            v_input = f["parameters"][...][:, 0:18]
-            v_homonohomo = f["n_phases"][...]-1
+        t_input = data_input[train_indices]
+        t_output = data_output[train_indices]
 
-        # load in test data
-        with h5py.File(test_location, "r") as f:
-            tst_output = f["pc_scores"][...][:, :5]
-            tst_input = f["parameters"][...][:, 0:18]
-            tst_homonohomo = f["n_phases"][...]-1
+        # get test data
+        tst_input = data_input[test_indices]
+        tst_output = data_output[test_indices]
 
         # Prepare Data for Training
-        #  remove all single phase samples as this is a heterogeneous model
-        t_hetero = np.where(t_homonohomo == 1)[0]
-        t_output = t_output[t_hetero]
-        t_input = t_input[t_hetero]
-
-        v_hetero = np.where(v_homonohomo == 1)[0]
-        v_output = v_output[v_hetero]
-        v_input = v_input[v_hetero]
-
-        tst_hetero = np.where(tst_homonohomo == 1)[0]
-        tst_output = tst_output[tst_hetero]
-        tst_input = tst_input[tst_hetero]
-
         # Normalize parameters based on training mean = 0, std = 1
         self.u_in = np.mean(t_input, axis=0)
         self.s_in = np.std(t_input, axis=0)
 
-        X_train = (t_input - self.u_in) / self.s_in
-        X_validate = (v_input - self.u_in) / self.s_in
-        X_test = (tst_input - self.u_in) / self.s_in
+        X_train = self.apply_input_normalization(t_input)
+        X_test = self.apply_input_normalization(tst_input)
 
         # scale pc_scores from -1 to 1 based on training min and max
-        self.min_out = np.min(np.concatenate((t_output, v_output)), axis=0)
-        self.max_out = np.max(np.concatenate((t_output, v_output)), axis=0)
+        self.min_out = np.min(np.concatenate((t_output, tst_output)), axis=0)
+        self.max_out = np.max(np.concatenate((t_output, tst_output)), axis=0)
 
         self.min_y_dst = np.tile(-1, len(self.min_out))
         self.max_y_dst = np.tile(1, len(self.max_out))
 
-        y_train = from_range_to_range(t_output, self.min_out, self.max_out, self.min_y_dst, self.max_y_dst)
-        y_validate = from_range_to_range(v_output, self.min_out, self.max_out, self.min_y_dst, self.max_y_dst)
-        y_test = from_range_to_range(tst_output, self.min_out, self.max_out, self.min_y_dst, self.max_y_dst)
+        y_train = self.apply_output_normalization(t_output)
+        y_test = self.apply_output_normalization(tst_output)
 
-        # y_train = t_output
-        # y_validate = v_output
-        # y_test = tst_output
-
-        # create datasets and return
+        # create datasets
         self.train = SpinodalDataset(X_train, y_train)
-        self.validate = SpinodalDataset(X_validate, y_validate)
         self.test = SpinodalDataset(X_test, y_test)
 
     def apply_input_normalization(self, input_data):
@@ -98,6 +69,10 @@ class RDatasetsGenerator:
 
     def undo_output_normalization(self, output_data):
         return from_range_to_range(output_data, self.min_y_dst, self.max_y_dst, self.min_out, self.max_out)
+
+    def make_loader(self, dataset_type, batch_size):
+        dataset = self.train if dataset_type is DatasetType.TRAIN else self.test
+        return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 
 # Dataset

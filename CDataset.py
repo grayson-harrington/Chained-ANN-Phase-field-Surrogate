@@ -1,50 +1,45 @@
 import h5py
 import numpy as np
 
+from DatasetType import DatasetType
+
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.dataset import T_co
 
 
 # create train and validation datasets to be used by data loaders
 class CDatasetsGenerator:
-    def __init__(self, train_location, validate_location, test_location):
-        # load in training data
-        with h5py.File(train_location, "r") as f:
-            print(list(f.keys()))
-            t_output = f["n_phases"][...]-1
-            t_params = f["parameters"][...][:, 0:18]
+    def __init__(self, data_input, data_output, train_indices, test_indices):
+        # get training data
+        t_input = data_input[train_indices]
+        t_output = data_output[train_indices]
 
-        # load in training data
-        with h5py.File(validate_location, "r") as f:
-            v_output = f["n_phases"][...]-1
-            v_params = f["parameters"][...][:, 0:18]
-
-        # load in test data
-        with h5py.File(test_location, "r") as f:
-            tst_output = f["n_phases"][...]-1
-            tst_params = f["parameters"][...][:, 0:18]
+        # get test data
+        tst_input = data_input[test_indices]
+        tst_output = data_output[test_indices]
 
         # Prepare Data for Training
         # Normalize input based on training mean = 0, std = 1
-        self.u_in = np.mean(t_params, axis=0)
-        self.s_in = np.std(t_params, axis=0)
+        self.u_in = np.mean(t_input, axis=0)
+        self.s_in = np.std(t_input, axis=0)
 
-        X_train = (t_params - self.u_in) / self.s_in
-        X_validate = (v_params - self.u_in) / self.s_in
-        X_test = (tst_params - self.u_in) / self.s_in
+        X_train = self.apply_input_normalization(t_input)
+        X_test = self.apply_input_normalization(tst_input)
 
         y_train = t_output
-        y_validate = v_output
         y_test = tst_output
 
-        # create datasets and return
+        # create datasets
         self.train = SpinodalDataset(X_train, y_train)
-        self.validate = SpinodalDataset(X_validate, y_validate)
         self.test = SpinodalDataset(X_test, y_test)
 
     def apply_input_normalization(self, input_data):
         return (input_data - self.u_in) / self.s_in
+
+    def make_loader(self, dataset_type, batch_size):
+        dataset = self.train if dataset_type is DatasetType.TRAIN else self.test
+        return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 
 # Dataset

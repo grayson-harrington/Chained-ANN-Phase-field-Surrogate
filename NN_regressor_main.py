@@ -1,7 +1,6 @@
 import math
 import pickle
 import numpy as np
-import h5py
 
 from MLP_Regressor import MLPRegressor, DatasetType
 
@@ -11,7 +10,7 @@ from sklearn.metrics import mean_absolute_error
 n_epochs = 200
 n_pc_scores = 5
 
-train_model = True
+train_model = False
 save_model = True
 model_path = "_Regression/_regression_model"
 
@@ -21,9 +20,9 @@ def main():
     print("Creating Machine Learning Model")
 
     NN_model = MLPRegressor(
-        train_location="datasets/PS-Linkage_train.hdf5",
-        validate_location="datasets/PS-Linkage_validate.hdf5",
-        test_location="datasets/PS-Linkage_test.hdf5",
+        train_location="_datasets/rand fold/train.hdf5",
+        validate_location="_datasets/rand fold/validate.hdf5",
+        test_location="_datasets/rand fold/test.hdf5",
         hidden_shape=(12, 12, 12),
         batch_size=64,  # larger batch size tends to give better results
         dropout_ratio=0.01,

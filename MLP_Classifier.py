@@ -4,7 +4,6 @@ from CDataset import CDatasetsGenerator
 from DatasetType import DatasetType
 
 import torch
-from torch.utils.data import DataLoader
 
 from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn.metrics import classification_report, confusion_matrix
@@ -15,9 +14,10 @@ import numpy as np
 class MLPClassifier:
     def __init__(
         self,
-        train_location,
-        validate_location,
-        test_location,
+        model_input,
+        model_output,
+        train_ind,
+        test_ind,
         optimizer_params,
         scheduler_params,
         hidden_shape=(18, 18, 18),
@@ -27,10 +27,9 @@ class MLPClassifier:
         self.batch_size = batch_size
 
         # load in train and validation datasets
-        self.datasets = CDatasetsGenerator(train_location, validate_location, test_location)
-        self.loader_train = DataLoader(self.datasets.train, batch_size=batch_size, shuffle=True)
-        self.loader_validate = DataLoader(self.datasets.validate, batch_size=batch_size, shuffle=True)
-        self.loader_test = DataLoader(self.datasets.test, batch_size=batch_size, shuffle=True)
+        self.datasets = CDatasetsGenerator(model_input, model_output, train_ind, test_ind)
+        self.loader_train = self.datasets.make_loader(DatasetType.TRAIN, batch_size)
+        self.loader_test = self.datasets.make_loader(DatasetType.TEST, batch_size)
 
         # create neural net
         n_input = len(self.datasets.train.input[0])
@@ -82,7 +81,7 @@ class MLPClassifier:
             t_err[epoch] = err
 
             self.net.eval()
-            loss, err = self.run_pass(DatasetType.VALIDATE)
+            loss, err = self.run_pass(DatasetType.TEST)
             v_loss[epoch] = loss
             v_err[epoch] = err
 
@@ -181,8 +180,6 @@ class MLPClassifier:
         loader = None
         if dataset_type is DatasetType.TRAIN:
             loader = self.loader_train
-        elif dataset_type is DatasetType.VALIDATE:
-            loader = self.loader_validate
         elif dataset_type is DatasetType.TEST:
             loader = self.loader_test
         return loader

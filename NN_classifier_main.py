@@ -17,9 +17,9 @@ def main():
     print("Creating Machine Learning Model")
 
     nn_model = MLPClassifier(
-        train_location="datasets/PS-Linkage_train.hdf5",
-        validate_location="datasets/PS-Linkage_validate.hdf5",
-        test_location="datasets/PS-Linkage_test.hdf5",
+        train_location="../6. Early Train Split/datasets/train.hdf5",
+        validate_location="../6. Early Train Split/datasets/validate.hdf5",
+        test_location="../6. Early Train Split/datasets/test.hdf5",
         hidden_shape=(5,),
         batch_size=8,  # smaller batches overfit less
         optimizer_params={"init_lr": 0.001, "decay": 1e-02},
@@ -81,13 +81,15 @@ if __name__ == "__main__":
             accuracy_measure=mean_absolute_error,
             print_report=True,
         )
+
         model.model_accuracy(
             dataset_type=DatasetType.VALIDATE,
             accuracy_measure=mean_absolute_error,
             print_report=True,
         )
-        # model.model_accuracy(
-        #     dataset_type=DatasetType.TEST,
-        #     accuracy_measure=mean_absolute_error,
-        #     print_report=True,
-        # )
+
+        model.model_accuracy(
+            dataset_type=DatasetType.TEST,
+            accuracy_measure=mean_absolute_error,
+            print_report=True,
+        )

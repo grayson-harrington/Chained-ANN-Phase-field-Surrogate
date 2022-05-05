@@ -1,5 +1,4 @@
 from math import floor
-import pickle
 import h5py
 import numpy as np
 
@@ -8,9 +7,10 @@ from MLP_Regressor import MLPRegressor, DatasetType
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import KFold
+from sklearn.decomposition import PCA
 
 
-def cv_regressor(model_input, model_output, n_folds=1, random_seed=0, regressor_kwargs=None):
+def cv_regressor(model_input, autocorrelations, n_folds=1, random_seed=0, regressor_kwargs=None):
     print()
     print("preparing train/test splits")
 
@@ -34,18 +34,35 @@ def cv_regressor(model_input, model_output, n_folds=1, random_seed=0, regressor_
         print(f"\nCV Split: {split_index}\n")
         print("Creating Machine Learning Model(s)")
 
+        # need to get PC scores for both train and test sets
+        corrs_train = autocorrelations[train_indices]
+        corrs_test = autocorrelations[test_indices]
+
+        pca = PCA(
+            svd_solver='full',
+            n_components=5,
+            random_state=random_seed,
+        )
+        scores_train = pca.fit_transform(corrs_train.reshape(len(corrs_train), -1))
+        scores_test = pca.transform(corrs_test.reshape(len(corrs_test), -1))
+
+        model_output = np.zeros((len(model_input), 5))
+        model_output[train_indices] = scores_train
+        model_output[test_indices] = scores_test
+
+        # train regressor based on calculated PC scores
         nmae, nstd, r2 = build_regressor(model_input, model_output, train_indices, test_indices, **regressor_kwargs)
         cv_model_nmaes.append(nmae)
         cv_model_nstds.append(nstd)
         cv_model_r2s.append(r2)
 
-    print("\n"*2)
+    print("\n" * 2)
     print("CV TEST ACCURACY REPORT:")
     print(f"\tnumber of folds:\t\t{n_folds}")
     print(f"\tmean nmae by PC score:\t{np.mean(cv_model_nmaes, axis=0)}")
     print(f"\tmean nstd by PC score:\t{np.mean(cv_model_nstds, axis=0)}")
     print(f"\tmean r2 by PC score:\t{np.mean(cv_model_r2s, axis=0)}")
-    print("\n"*2)
+    print("\n" * 2)
 
 
 def build_regressor(model_input, model_output, train_indices, test_indices, epochs=200, plot_loss_error=False):
@@ -168,16 +185,18 @@ if __name__ == "__main__":
         parameters = f["parameters"][...][:, 0:18]
         homonohomo = f["n_phases"][...] - 1
         pc_scores = f["pc_scores"][...][:, :5]
+        correlations = f["pc_scores"][...]
 
     #  remove all single phase samples as this is a heterogeneous model
     hetero = np.where(homonohomo == 1)[0]
     parameters = parameters[hetero]
     pc_scores = pc_scores[hetero]
+    correlations = correlations[hetero]
 
     # do the regressor training / analysis
     if train_model and not save_model:
         # train model with CV and report metrics. Don't save the models produced
-        cv_regressor(parameters, pc_scores, n_folds=cv_folds, random_seed=rnd_seed,
+        cv_regressor(parameters, correlations, n_folds=cv_folds, random_seed=rnd_seed,
                      regressor_kwargs={"epochs": n_epochs,
                                        "plot_loss_error": plot_progress})
     elif train_model and save_model:

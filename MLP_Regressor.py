@@ -107,7 +107,6 @@ class MLPRegressor:
         if loader is None:
             return -1
 
-        n_batches = len(loader)
         running_loss = 0
         for ind, batch in enumerate(loader):
             X, y = batch
@@ -126,7 +125,7 @@ class MLPRegressor:
                     loss = self.loss_func(y_pred, y)
                     running_loss += loss.data.numpy() * X.shape[0]
 
-        _, mean_acc, _, _ = self.model_accuracy(dataset_type=dataset_type)
+        _, _, mean_acc, _, _ = self.model_accuracy(dataset_type=dataset_type)
 
         return running_loss / len(loader.dataset), mean_acc
 
@@ -152,8 +151,7 @@ class MLPRegressor:
 
         return nae, nmae, nstd, r2
 
-    def model_accuracy(self, dataset_type=DatasetType.TRAIN, accuracy_measure=mean_absolute_error,
-                       print_report=False, unscale_output=False):
+    def model_accuracy(self, dataset_type=DatasetType.TRAIN, print_report=False, unscale_output=False):
 
         loader = self.get_loader(dataset_type)
         if loader is None:
@@ -168,10 +166,11 @@ class MLPRegressor:
 
         if print_report:
             print(f"\n{dataset_type}")
+
         nae, nmae, nstd, r2 = self.nMAE_nSTD_r2(y, y_pred, print_metrics=print_report)
 
         # return acc, mean, std
-        return nae, nmae, nstd, r2
+        return y, y_pred, nmae, nstd, r2
 
     def output_correlation(self, output_index=0, dataset_type=DatasetType.TRAIN, accuracy_measure=r2_score,
                            unscale_output=True):

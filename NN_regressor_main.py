@@ -20,7 +20,7 @@ def cv_regressor(model_input, autocorrelations, n_folds=1, random_seed=0, save_t
         inds = np.arange(len(model_input))
         np.random.seed(random_seed)
         np.random.shuffle(inds)
-        cutoff = int(len(inds) * 0.85)
+        cutoff = int(len(inds) * 0.9)
         cv_splits = [(inds[:cutoff], inds[cutoff:])]
 
     # loop through cv_splits and build/test model(s)
@@ -56,8 +56,18 @@ def cv_regressor(model_input, autocorrelations, n_folds=1, random_seed=0, save_t
 
         # train regressor based on calculated PC scores
         print("training model")
-        y_t, y_pred_t, nmae_t, nstd_t, r2_t, y_tst, y_pred_tst, nmae_tst, nstd_tst, r2_tst = \
-            build_regressor(model_input, model_output, train_indices, test_indices, **regressor_kwargs)
+        nn_model = build_regressor(model_input, model_output, train_indices, test_indices, **regressor_kwargs)
+
+        y_t, y_pred_t, nmae_t, nstd_t, r2_t = nn_model.model_accuracy(
+            dataset_type=DatasetType.TRAIN,
+            print_report=True,
+            unscale_output=True
+        )
+        y_tst, y_pred_tst, nmae_tst, nstd_tst, r2_tst = nn_model.model_accuracy(
+            dataset_type=DatasetType.TEST,
+            print_report=True,
+            unscale_output=True
+        )
 
         # transform predicted pc scores back to autocorrelations
         print("reconstructing autocorrelations from PC scores")
@@ -103,7 +113,8 @@ def cv_regressor(model_input, autocorrelations, n_folds=1, random_seed=0, save_t
     print("\n" * 2)
 
 
-def build_regressor(model_input, model_output, train_indices, test_indices, epochs=200, plot_loss_error=False):
+def build_regressor(model_input, model_output, train_indices, test_indices, epochs=200,
+                    print_metrics=False, plot_loss_error=False):
     # create and train model
     nn_model = MLPRegressor(
         model_input=model_input,
@@ -122,32 +133,34 @@ def build_regressor(model_input, model_output, train_indices, test_indices, epoc
     if plot_loss_error:
         plot_metrics(nn_model, t_loss, t_err, tst_loss, tst_err)
 
-    y_t, y_pred_t, nmae_t, nstd_t, r2_t = nn_model.model_accuracy(
-        dataset_type=DatasetType.TRAIN,
-        print_report=True,
-        unscale_output=True
-    )
-    y_tst, y_pred_tst, nmae_tst, nstd_tst, r2_tst = nn_model.model_accuracy(
-        dataset_type=DatasetType.TEST,
-        print_report=True,
-        unscale_output=True
-    )
+    if print_metrics:
+        nn_model.model_accuracy(
+            dataset_type=DatasetType.TRAIN,
+            print_report=True,
+            unscale_output=True
+        )
+        nn_model.model_accuracy(
+            dataset_type=DatasetType.TEST,
+            print_report=True,
+            unscale_output=True
+        )
 
-    return y_t, y_pred_t, nmae_t, nstd_t, r2_t, y_tst, y_pred_tst, nmae_tst, nstd_tst, r2_tst
+    return nn_model
 
 
 def plot_metrics(nn_model, t_loss, t_err, tst_loss, tst_err):
+    epochs = len(t_loss)
     # train/validation loss/accuracy charts
     fig, ax = plt.subplots()
-    ax.plot(list(range(n_epochs)), t_loss, label="Training Loss")
-    ax.plot(list(range(n_epochs)), tst_loss, label="Test Loss")
+    ax.plot(list(range(epochs)), t_loss, label="Training Loss")
+    ax.plot(list(range(epochs)), tst_loss, label="Test Loss")
     ax.set_xlabel("Epoch")
     ax.set_ylabel("Loss")
     ax.set_ylim(bottom=0)
 
     ax2 = ax.twinx()
-    ax2.plot(list(range(n_epochs)), 1 - t_err, "--", label="Training Accuracy")
-    ax2.plot(list(range(n_epochs)), 1 - tst_err, "--", label="Test Accuracy")
+    ax2.plot(list(range(epochs)), 1 - t_err, "--", label="Training Accuracy")
+    ax2.plot(list(range(epochs)), 1 - tst_err, "--", label="Test Accuracy")
     ax2.set_ylabel("Model Accuracy")
     # ax2.set_ylim(bottom=0.7, top=1)
 
@@ -201,15 +214,15 @@ def plot_metrics(nn_model, t_loss, t_err, tst_loss, tst_err):
 dataset_path = "_datasets/dataset.hdf5"
 
 n_epochs = 200
-cv_folds = 10  # 10 for paper
+cv_folds = 1  # 10 for paper
 rnd_seed = 0
 plot_progress = False
-save_cv_tests = True
+save_cv_tests = False
 
 if __name__ == "__main__":
     np.set_printoptions(precision=4)
 
-    # load in test data
+    # load in data
     with h5py.File(dataset_path, "r") as f:
         print(list(f.keys()))
         parameters = f["parameters"][...][:, 0:18]

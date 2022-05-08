@@ -72,7 +72,7 @@ class RDatasetsGenerator:
 
     def make_loader(self, dataset_type, batch_size):
         dataset = self.train if dataset_type is DatasetType.TRAIN else self.test
-        return DataLoader(dataset, batch_size=batch_size, shuffle=True)
+        return DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
 
 # Dataset

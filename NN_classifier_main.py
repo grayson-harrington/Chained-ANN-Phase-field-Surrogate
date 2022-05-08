@@ -34,7 +34,8 @@ def cv_classifier(model_input, model_output, n_folds=1, random_seed=0, classifie
         build_classifier(model_input, model_output, train_indices, test_indices, **classifier_kwargs)
 
 
-def build_classifier(model_input, model_output, train_indices, test_indices, epochs=50, plot_loss_error=False):
+def build_classifier(model_input, model_output, train_indices, test_indices, epochs=50,
+                     plot_loss_error=False, print_metrics=False):
     # create and train model
     nn_model = MLPClassifier(
         model_input=model_input,
@@ -49,52 +50,53 @@ def build_classifier(model_input, model_output, train_indices, test_indices, epo
 
     t_loss, t_err, tst_loss, tst_err = nn_model.fit(n_epochs=epochs)
 
-    nn_model.model_accuracy(
-        dataset_type=DatasetType.TRAIN,
-        accuracy_measure=mean_absolute_error,
-        print_report=True,
-    )
+    if print_metrics:
+        nn_model.model_accuracy(
+            dataset_type=DatasetType.TRAIN,
+            accuracy_measure=mean_absolute_error,
+            print_report=True,
+        )
 
-    nn_model.model_accuracy(
-        dataset_type=DatasetType.TEST,
-        accuracy_measure=mean_absolute_error,
-        print_report=True,
-    )
+        nn_model.model_accuracy(
+            dataset_type=DatasetType.TEST,
+            accuracy_measure=mean_absolute_error,
+            print_report=True,
+        )
 
     if plot_loss_error:
-        # train/validation loss/accuracy charts
-        fig, ax = plt.subplots()
-        ax.plot(list(range(epochs)), t_loss, label="Training Loss")
-        ax.plot(list(range(epochs)), tst_loss, label="Test Loss")
-        # ax.set_ylim(bottom=0, top=0.35)
-        ax.set_xlabel("Epoch", fontsize=14)
-        ax.set_ylabel("Loss", fontsize=14)
-        ax.set_title("Homogeneous/Heterogeneous Classification Loss", fontsize=16)
-        ax.legend()
-
-        fig2, ax2 = plt.subplots()
-        ax2.plot(list(range(epochs)), t_err, "--", label="Training Error")
-        ax2.plot(list(range(epochs)), tst_err, "--", label="Test Error")
-        ax2.set_xlabel("Epoch", fontsize=14)
-        ax2.set_ylabel("Model Error", fontsize=14)
-        ax2.set_title("Homogeneous/Heterogeneous Classification Error", fontsize=16)
-        ax2.legend()
-
-        plt.show()
+        plot_metrics(epochs, t_loss, t_err, tst_loss, tst_err)
 
     return nn_model
 
 
+def plot_metrics(epochs, t_loss, t_err, tst_loss, tst_err):
+    # train/validation loss/accuracy charts
+    fig, ax = plt.subplots()
+    ax.plot(list(range(epochs)), t_loss, label="Training Loss")
+    ax.plot(list(range(epochs)), tst_loss, label="Test Loss")
+    # ax.set_ylim(bottom=0, top=0.35)
+    ax.set_xlabel("Epoch", fontsize=14)
+    ax.set_ylabel("Loss", fontsize=14)
+    ax.set_title("Homogeneous/Heterogeneous Classification Loss", fontsize=16)
+    ax.legend()
+
+    fig2, ax2 = plt.subplots()
+    ax2.plot(list(range(epochs)), t_err, "--", label="Training Error")
+    ax2.plot(list(range(epochs)), tst_err, "--", label="Test Error")
+    ax2.set_xlabel("Epoch", fontsize=14)
+    ax2.set_ylabel("Model Error", fontsize=14)
+    ax2.set_title("Homogeneous/Heterogeneous Classification Error", fontsize=16)
+    ax2.legend()
+
+    plt.show()
+
+
 dataset_path = "_datasets/dataset.hdf5"
 
-train_model = True
 n_epochs = 50
-cv_folds = 10
+cv_folds = 1  # 10 for paper
 rnd_seed = 0
 plot_progress = False
-
-save_model = False
-model_path = "_Classification/_classification_model"
 
 if __name__ == "__main__":
 
@@ -103,31 +105,7 @@ if __name__ == "__main__":
         parameters = f["parameters"][...][:, 0:18]
         homonohomo = f["n_phases"][...] - 1
 
-    if train_model and not save_model:
-        # train model with CV and report metrics. Don't save the models produced
-        cv_classifier(parameters, homonohomo, n_folds=cv_folds, random_seed=rnd_seed,
-                      classifier_kwargs={"epochs": n_epochs,
-                                         "plot_loss_error": plot_progress})
-    elif train_model and save_model:
-        # train model on random fold and save
-        print("TODO")  # TODO?
-    elif save_model and not train_model:
-        # load model and report metrics
-        model = pickle.load(open(model_path + ".p", "rb"))
-
-        print()
-        print("-" * 25)
-        print("-" * 5 + "Check Model Save" + "-" * 5)
-        print("-" * 25)
-
-        model.model_accuracy(
-            dataset_type=DatasetType.TRAIN,
-            accuracy_measure=mean_absolute_error,
-            print_report=True,
-        )
-
-        model.model_accuracy(
-            dataset_type=DatasetType.TEST,
-            accuracy_measure=mean_absolute_error,
-            print_report=True,
-        )
+    # train model with CV and report metrics. Don't save the models produced
+    cv_classifier(parameters, homonohomo, n_folds=cv_folds, random_seed=rnd_seed,
+                  classifier_kwargs={"epochs": n_epochs,
+                                     "plot_loss_error": plot_progress})

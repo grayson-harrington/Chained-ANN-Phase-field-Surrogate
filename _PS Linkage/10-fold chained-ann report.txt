@@ -1,0 +1,1765 @@
+"/Users/graysonharrington/Library/CloudStorage/OneDrive-GeorgiaInstituteofTechnology/_Classes Current/ME 8883 - Mat Info/Research Project/Chained-ANN-Phase-field-Surrogate/venv/bin/python" "/Users/graysonharrington/Library/CloudStorage/OneDrive-GeorgiaInstituteofTechnology/_Classes Current/ME 8883 - Mat Info/Research Project/Chained-ANN-Phase-field-Surrogate/PS-Linkage.py"
+['correlations', 'curated_micros', 'n_phases', 'parameters', 'pc_scores']
+
+CV Split: 1
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.4217		0.2665
+   2	0.1161		0.0995
+   4	0.0674		0.0436
+   6	0.0636		0.0611
+   8	0.0684		0.0448
+  10	0.0711		0.0625
+  12	0.0748		0.0626
+  14	0.0751		0.0719
+  16	0.0705		0.0873
+  18	0.0666		0.0567
+  20	0.0607		0.0483
+  22	0.0496		0.0493
+  24	0.0367		0.0308
+  26	0.0263		0.0242
+  28	0.0219		0.0227
+  30	0.0215		0.0236
+  32	0.0209		0.0241
+  34	0.0206		0.0234
+  36	0.0202		0.0231
+  38	0.0197		0.0222
+  40	0.0193		0.0223
+  42	0.0190		0.0222
+  44	0.0187		0.0221
+  46	0.0185		0.0221
+  48	0.0184		0.0221
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.997     0.996      7330
+         1.0      0.980     0.976     0.978      1233
+
+    accuracy                          0.994      8563
+   macro avg      0.988     0.986     0.987      8563
+weighted avg      0.994     0.994     0.994      8563
+
+
+[[7306   24]
+ [  30 1203]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.993     0.996     0.995       820
+         1.0      0.977     0.955     0.966       132
+
+    accuracy                          0.991       952
+   macro avg      0.985     0.975     0.980       952
+weighted avg      0.990     0.991     0.991       952
+
+
+[[817   3]
+ [  6 126]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	2.4033e-01		1.4835e-01
+   5	8.9434e-02		8.7969e-02
+  10	5.1455e-02		5.4525e-02
+  15	3.4600e-02		3.7693e-02
+  20	2.4837e-02		2.4591e-02
+  25	1.9324e-02		1.7414e-02
+  30	1.6882e-02		1.5165e-02
+  35	1.5082e-02		1.3507e-02
+  40	1.5523e-02		1.3056e-02
+  45	1.3705e-02		1.2673e-02
+  50	1.2857e-02		1.2064e-02
+  55	1.3428e-02		1.1994e-02
+  60	1.2716e-02		1.0220e-02
+  65	1.2643e-02		1.0483e-02
+  70	1.1099e-02		9.3192e-03
+  75	1.2754e-02		9.9742e-03
+  80	1.2432e-02		9.9855e-03
+  85	1.1575e-02		8.8789e-03
+  90	1.2893e-02		9.5053e-03
+  95	1.1131e-02		8.0638e-03
+ 100	1.0164e-02		8.8613e-03
+ 105	1.0494e-02		8.3729e-03
+ 110	1.1695e-02		8.9140e-03
+ 115	1.0086e-02		7.6527e-03
+ 120	9.5150e-03		7.3085e-03
+ 125	9.4976e-03		7.7197e-03
+ 130	9.3444e-03		7.4157e-03
+ 135	9.0071e-03		7.1670e-03
+ 140	8.3771e-03		7.1366e-03
+ 145	8.4597e-03		7.0002e-03
+ 150	8.1170e-03		7.1051e-03
+ 155	8.1280e-03		6.8222e-03
+ 160	8.2026e-03		6.8626e-03
+ 165	8.9161e-03		6.7733e-03
+ 170	8.2178e-03		6.8601e-03
+ 175	8.7222e-03		6.8868e-03
+ 180	8.1647e-03		6.7311e-03
+ 185	8.4807e-03		6.8982e-03
+ 190	8.0376e-03		6.8607e-03
+ 195	8.5367e-03		6.8517e-03
+
+DatasetType.TRAIN
+nmae:	[0.09857702 0.17413555 0.29506033 0.48145929 0.82266817]
+nstd:	[0.14207611 0.16513247 0.27330897 0.4349044  1.02551934]
+r2:	[0.9781449229931767, 0.9571878442542936, 0.8877984997260869, 0.7469443806793052, 0.39639628560176643]
+
+DatasetType.TEST
+nmae:	[0.08660732 0.22378712 0.33214029 0.63491867 0.84389865]
+nstd:	[0.07798422 0.19594793 0.29539808 0.55006444 1.03217791]
+r2:	[0.9896176253091021, 0.9339052818424298, 0.8618149588762187, 0.5737998713629568, 0.29860908034765254]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.993     0.996     0.995       820
+         1.0      0.977     0.955     0.966       132
+
+    accuracy                          0.991       952
+   macro avg      0.985     0.975     0.980       952
+weighted avg      0.990     0.991     0.991       952
+
+
+[[817   3]
+ [  6 126]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.19589009 0.25944104 0.34056464 0.64930488 0.84516346]
+nstd:	[0.77643222 0.43038054 0.31354391 0.572321   1.04218007]
+r2:	[0.5717827828030042, 0.8161383688627837, 0.847048343725304, 0.5350170501927249, 0.3222962174253091]
+reconstructing autocorrelations from PC scores
+saving results
+
+CV Split: 2
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.6754		0.4242
+   2	0.1213		0.1135
+   4	0.0726		0.0614
+   6	0.0625		0.0740
+   8	0.0688		0.0635
+  10	0.0744		0.0785
+  12	0.0732		0.0723
+  14	0.0710		0.0866
+  16	0.0739		0.0490
+  18	0.0647		0.0587
+  20	0.0603		0.0524
+  22	0.0464		0.0459
+  24	0.0365		0.0489
+  26	0.0243		0.0480
+  28	0.0193		0.0295
+  30	0.0187		0.0310
+  32	0.0180		0.0288
+  34	0.0177		0.0302
+  36	0.0172		0.0312
+  38	0.0167		0.0300
+  40	0.0163		0.0293
+  42	0.0159		0.0298
+  44	0.0155		0.0295
+  46	0.0153		0.0296
+  48	0.0152		0.0296
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.998     0.997      7343
+         1.0      0.988     0.979     0.983      1220
+
+    accuracy                          0.995      8563
+   macro avg      0.992     0.988     0.990      8563
+weighted avg      0.995     0.995     0.995      8563
+
+
+[[7328   15]
+ [  26 1194]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.989     0.999     0.994       807
+         1.0      0.993     0.938     0.965       145
+
+    accuracy                          0.989       952
+   macro avg      0.991     0.968     0.979       952
+weighted avg      0.990     0.989     0.989       952
+
+
+[[806   1]
+ [  9 136]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	2.4839e-01		1.5280e-01
+   5	1.1471e-01		8.8691e-02
+  10	6.4009e-02		5.3451e-02
+  15	4.2840e-02		3.5194e-02
+  20	2.6173e-02		2.1956e-02
+  25	2.0696e-02		1.6001e-02
+  30	1.8789e-02		1.5373e-02
+  35	1.7562e-02		1.5632e-02
+  40	1.6331e-02		1.2228e-02
+  45	1.6817e-02		1.2406e-02
+  50	1.4652e-02		1.2128e-02
+  55	1.5093e-02		9.3157e-03
+  60	1.4528e-02		1.2026e-02
+  65	1.3649e-02		1.0134e-02
+  70	1.3506e-02		1.3617e-02
+  75	1.1582e-02		1.1138e-02
+  80	1.4839e-02		1.0522e-02
+  85	1.3378e-02		1.0216e-02
+  90	1.2585e-02		9.5992e-03
+  95	1.2900e-02		1.1642e-02
+ 100	1.1955e-02		1.1378e-02
+ 105	1.1421e-02		1.0407e-02
+ 110	1.1552e-02		9.4837e-03
+ 115	1.1599e-02		8.4012e-03
+ 120	1.0651e-02		8.1921e-03
+ 125	9.8608e-03		8.2626e-03
+ 130	9.4016e-03		8.7471e-03
+ 135	9.9252e-03		8.1627e-03
+ 140	8.9298e-03		6.6297e-03
+ 145	9.0337e-03		8.4580e-03
+ 150	8.9804e-03		8.2669e-03
+ 155	8.9310e-03		7.8332e-03
+ 160	8.4978e-03		8.4636e-03
+ 165	9.2150e-03		7.6620e-03
+ 170	8.3171e-03		8.0565e-03
+ 175	9.0925e-03		7.2331e-03
+ 180	8.7614e-03		8.3245e-03
+ 185	8.9134e-03		7.4838e-03
+ 190	8.7545e-03		7.9915e-03
+ 195	8.0955e-03		7.8127e-03
+
+DatasetType.TRAIN
+nmae:	[0.08907229 0.17674776 0.30778896 0.4798281  0.7928369 ]
+nstd:	[0.12938882 0.1695567  0.27085045 0.43165355 0.97505761]
+r2:	[0.9818351627046962, 0.9555230055369678, 0.8835396284369816, 0.7529339904570852, 0.42819601774820715]
+
+DatasetType.TEST
+nmae:	[0.10431022 0.23086847 0.41253483 0.65035384 0.95018338]
+nstd:	[0.187321   0.22019283 0.40134156 0.58958511 1.20386689]
+r2:	[0.9671652457745441, 0.9237126052266583, 0.7553399379157518, 0.4630967466358168, 0.21225883351201735]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.989     0.999     0.994       807
+         1.0      0.993     0.938     0.965       145
+
+    accuracy                          0.989       952
+   macro avg      0.991     0.968     0.979       952
+weighted avg      0.990     0.989     0.989       952
+
+
+[[806   1]
+ [  9 136]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.12846857 0.22918764 0.39816129 0.64593502 0.95366124]
+nstd:	[0.47948139 0.24125755 0.38773222 0.58581748 1.19259863]
+r2:	[0.8330607897562949, 0.9172716278368271, 0.769784294228935, 0.458127770934484, 0.20591782353583077]
+reconstructing autocorrelations from PC scores
+saving results
+
+CV Split: 3
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.3981		0.2369
+   2	0.1018		0.0946
+   4	0.0582		0.0627
+   6	0.0649		0.0591
+   8	0.0699		0.0744
+  10	0.0701		0.0908
+  12	0.0747		0.0751
+  14	0.0762		0.0802
+  16	0.0725		0.0584
+  18	0.0663		0.0595
+  20	0.0596		0.0671
+  22	0.0480		0.0550
+  24	0.0395		0.0538
+  26	0.0281		0.0329
+  28	0.0227		0.0341
+  30	0.0221		0.0339
+  32	0.0212		0.0342
+  34	0.0206		0.0338
+  36	0.0204		0.0327
+  38	0.0198		0.0328
+  40	0.0194		0.0325
+  42	0.0189		0.0330
+  44	0.0185		0.0329
+  46	0.0183		0.0329
+  48	0.0182		0.0329
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.997     0.997      7318
+         1.0      0.982     0.977     0.979      1245
+
+    accuracy                          0.994      8563
+   macro avg      0.989     0.987     0.988      8563
+weighted avg      0.994     0.994     0.994      8563
+
+
+[[7296   22]
+ [  29 1216]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.987     0.994     0.990       832
+         1.0      0.956     0.908     0.932       120
+
+    accuracy                          0.983       952
+   macro avg      0.972     0.951     0.961       952
+weighted avg      0.983     0.983     0.983       952
+
+
+[[827   5]
+ [ 11 109]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	3.3648e-01		9.8481e-02
+   5	1.4572e-01		6.0210e-02
+  10	5.9003e-02		3.2305e-02
+  15	3.7836e-02		1.8813e-02
+  20	2.4848e-02		1.1307e-02
+  25	2.0597e-02		9.1267e-03
+  30	1.7107e-02		7.6473e-03
+  35	1.5183e-02		6.5102e-03
+  40	1.4946e-02		5.8582e-03
+  45	1.3976e-02		6.4490e-03
+  50	1.3802e-02		6.4590e-03
+  55	1.4139e-02		5.1193e-03
+  60	1.3820e-02		5.6802e-03
+  65	1.3427e-02		8.4085e-03
+  70	1.1671e-02		6.5894e-03
+  75	1.2128e-02		3.5917e-03
+  80	1.2916e-02		5.0565e-03
+  85	1.1765e-02		5.4432e-03
+  90	1.1571e-02		5.9551e-03
+  95	1.2458e-02		6.3277e-03
+ 100	1.2044e-02		4.9979e-03
+ 105	1.1256e-02		7.2836e-03
+ 110	9.8987e-03		5.3777e-03
+ 115	1.0359e-02		5.6866e-03
+ 120	1.0634e-02		5.1666e-03
+ 125	9.2336e-03		4.7717e-03
+ 130	9.1195e-03		5.5157e-03
+ 135	9.5783e-03		4.5634e-03
+ 140	9.3975e-03		4.5004e-03
+ 145	8.5455e-03		4.3212e-03
+ 150	9.6755e-03		3.6195e-03
+ 155	8.5398e-03		4.0126e-03
+ 160	8.5385e-03		4.6842e-03
+ 165	9.8975e-03		4.6562e-03
+ 170	8.6721e-03		4.2954e-03
+ 175	9.5340e-03		4.5083e-03
+ 180	8.2045e-03		3.0718e-03
+ 185	8.6532e-03		4.6117e-03
+ 190	8.9784e-03		4.1439e-03
+ 195	8.3335e-03		3.9862e-03
+
+DatasetType.TRAIN
+nmae:	[0.09718416 0.17844752 0.3010466  0.50520022 0.77677413]
+nstd:	[0.12709614 0.16157572 0.27685921 0.45792774 0.96677993]
+r2:	[0.9812924038606533, 0.9566109250310517, 0.8857249685174765, 0.7234534350431754, 0.44868861992081]
+
+DatasetType.TEST
+nmae:	[0.10072516 0.19591865 0.31157353 0.58422836 0.93348937]
+nstd:	[0.09170635 0.19487712 0.30497947 0.56203825 1.27260956]
+r2:	[0.9856393391304124, 0.9439336525144153, 0.8635173614698171, 0.542974843576336, 0.03512169224707662]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.987     0.994     0.990       832
+         1.0      0.956     0.908     0.932       120
+
+    accuracy                          0.983       952
+   macro avg      0.972     0.951     0.961       952
+weighted avg      0.983     0.983     0.983       952
+
+
+[[827   5]
+ [ 11 109]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.28306757 0.25258864 0.30329414 0.57757861 0.95286521]
+nstd:	[0.95114489 0.45981445 0.30176978 0.5777875  1.25848507]
+r2:	[0.37753091291902297, 0.8001219881262096, 0.8645793085306253, 0.5234221292466119, 0.02410876876062118]
+reconstructing autocorrelations from PC scores
+saving results
+
+CV Split: 4
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.5813		0.2844
+   2	0.1273		0.0740
+   4	0.0605		0.0419
+   6	0.0650		0.0341
+   8	0.0694		0.0572
+  10	0.0758		0.0535
+  12	0.0784		0.0627
+  14	0.0808		0.0638
+  16	0.0717		0.0496
+  18	0.0684		0.0454
+  20	0.0590		0.0572
+  22	0.0508		0.0304
+  24	0.0375		0.0204
+  26	0.0258		0.0151
+  28	0.0215		0.0156
+  30	0.0202		0.0148
+  32	0.0201		0.0146
+  34	0.0194		0.0157
+  36	0.0190		0.0145
+  38	0.0185		0.0146
+  40	0.0180		0.0148
+  42	0.0177		0.0147
+  44	0.0174		0.0147
+  46	0.0171		0.0147
+  48	0.0170		0.0147
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.997     0.997      7329
+         1.0      0.984     0.979     0.981      1234
+
+    accuracy                          0.995      8563
+   macro avg      0.990     0.988     0.989      8563
+weighted avg      0.995     0.995     0.995      8563
+
+
+[[7309   20]
+ [  26 1208]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.998     0.997       821
+         1.0      0.985     0.977     0.981       131
+
+    accuracy                          0.995       952
+   macro avg      0.990     0.987     0.989       952
+weighted avg      0.995     0.995     0.995       952
+
+
+[[819   2]
+ [  3 128]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	3.2991e-01		2.2992e-01
+   5	1.4498e-01		1.3086e-01
+  10	6.7558e-02		6.2009e-02
+  15	4.0931e-02		3.9479e-02
+  20	2.5056e-02		2.2316e-02
+  25	1.9658e-02		1.7644e-02
+  30	1.7516e-02		1.6557e-02
+  35	1.6265e-02		1.4103e-02
+  40	1.5001e-02		1.5878e-02
+  45	1.3786e-02		1.2671e-02
+  50	1.2398e-02		1.2632e-02
+  55	1.2379e-02		1.2016e-02
+  60	1.2775e-02		1.2426e-02
+  65	1.2464e-02		1.1188e-02
+  70	1.2062e-02		1.2030e-02
+  75	1.1418e-02		1.1356e-02
+  80	1.2230e-02		1.2535e-02
+  85	1.1497e-02		1.0801e-02
+  90	1.0703e-02		1.1051e-02
+  95	1.2388e-02		1.0516e-02
+ 100	1.0955e-02		1.1250e-02
+ 105	9.9352e-03		1.1819e-02
+ 110	1.0448e-02		1.0719e-02
+ 115	9.2294e-03		9.3851e-03
+ 120	9.0360e-03		9.7394e-03
+ 125	9.0597e-03		8.9395e-03
+ 130	8.9169e-03		8.8053e-03
+ 135	8.7305e-03		9.1578e-03
+ 140	8.8183e-03		8.7194e-03
+ 145	9.1081e-03		8.7810e-03
+ 150	8.7590e-03		8.7267e-03
+ 155	8.4920e-03		8.6705e-03
+ 160	8.0269e-03		8.3718e-03
+ 165	8.3439e-03		8.4714e-03
+ 170	7.9682e-03		8.3906e-03
+ 175	7.9506e-03		8.4939e-03
+ 180	8.2950e-03		8.4660e-03
+ 185	8.4817e-03		8.4903e-03
+ 190	7.8240e-03		8.4391e-03
+ 195	8.3553e-03		8.4726e-03
+
+DatasetType.TRAIN
+nmae:	[0.08401674 0.17073691 0.3193981  0.50711289 0.76923363]
+nstd:	[0.12147602 0.1609365  0.2926971  0.45093969 0.94322949]
+r2:	[0.9839361791170447, 0.9586994774764253, 0.8700894008257563, 0.7245274631919641, 0.4469137739624617]
+
+DatasetType.TEST
+nmae:	[0.1199015  0.20085392 0.37584333 0.575679   0.92519929]
+nstd:	[0.24412038 0.20539428 0.36272781 0.64398028 1.06911413]
+r2:	[0.9408094524741889, 0.9389838574481115, 0.8103015961910873, 0.6055752618218047, 0.3355022880618501]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.998     0.997       821
+         1.0      0.985     0.977     0.981       131
+
+    accuracy                          0.995       952
+   macro avg      0.990     0.987     0.989       952
+weighted avg      0.995     0.995     0.995       952
+
+
+[[819   2]
+ [  3 128]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.20038905 0.22310024 0.37124275 0.5790067  0.92324434]
+nstd:	[0.83517423 0.33076135 0.34986133 0.64333291 1.07312972]
+r2:	[0.4631305613055323, 0.8834641956306699, 0.8182429078905515, 0.6020893732057563, 0.33767870107679443]
+reconstructing autocorrelations from PC scores
+saving results
+
+CV Split: 5
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.4479		0.2779
+   2	0.0917		0.0689
+   4	0.0543		0.0491
+   6	0.0572		0.0490
+   8	0.0680		0.0587
+  10	0.0708		0.0470
+  12	0.0725		0.0797
+  14	0.0715		0.0784
+  16	0.0709		0.0550
+  18	0.0662		0.0519
+  20	0.0595		0.0658
+  22	0.0466		0.0440
+  24	0.0352		0.0383
+  26	0.0265		0.0297
+  28	0.0217		0.0280
+  30	0.0208		0.0277
+  32	0.0204		0.0279
+  34	0.0200		0.0264
+  36	0.0197		0.0263
+  38	0.0194		0.0278
+  40	0.0189		0.0265
+  42	0.0185		0.0270
+  44	0.0183		0.0269
+  46	0.0181		0.0268
+  48	0.0179		0.0268
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.998     0.997      7333
+         1.0      0.985     0.976     0.981      1230
+
+    accuracy                          0.995      8563
+   macro avg      0.991     0.987     0.989      8563
+weighted avg      0.994     0.995     0.995      8563
+
+
+[[7315   18]
+ [  29 1201]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.994     0.994     0.994       817
+         1.0      0.963     0.963     0.963       135
+
+    accuracy                          0.989       952
+   macro avg      0.978     0.978     0.978       952
+weighted avg      0.989     0.989     0.989       952
+
+
+[[812   5]
+ [  5 130]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	2.7045e-01		1.8268e-01
+   5	1.1353e-01		1.0846e-01
+  10	5.8753e-02		5.9665e-02
+  15	3.7611e-02		3.7630e-02
+  20	2.4943e-02		2.3468e-02
+  25	1.9729e-02		1.8103e-02
+  30	1.9471e-02		1.5848e-02
+  35	1.6696e-02		1.5014e-02
+  40	1.5892e-02		1.2912e-02
+  45	1.4465e-02		1.4761e-02
+  50	1.4146e-02		1.0178e-02
+  55	1.4410e-02		1.1608e-02
+  60	1.2145e-02		9.1959e-03
+  65	1.1888e-02		8.8656e-03
+  70	1.3249e-02		8.0602e-03
+  75	1.2424e-02		9.0411e-03
+  80	1.2665e-02		9.4519e-03
+  85	1.2993e-02		1.0293e-02
+  90	1.1475e-02		8.2112e-03
+  95	1.1449e-02		7.4162e-03
+ 100	1.1685e-02		7.7218e-03
+ 105	1.0895e-02		7.2741e-03
+ 110	1.0437e-02		7.7132e-03
+ 115	9.5489e-03		7.7182e-03
+ 120	1.0324e-02		8.2081e-03
+ 125	9.2422e-03		7.4027e-03
+ 130	9.2890e-03		7.1646e-03
+ 135	9.0212e-03		6.3336e-03
+ 140	9.0152e-03		6.5118e-03
+ 145	8.0697e-03		6.4465e-03
+ 150	7.6051e-03		6.1793e-03
+ 155	8.4398e-03		6.0514e-03
+ 160	8.4039e-03		6.0034e-03
+ 165	7.8128e-03		6.0843e-03
+ 170	8.1031e-03		6.1574e-03
+ 175	7.5755e-03		6.1630e-03
+ 180	7.7276e-03		6.4241e-03
+ 185	7.8483e-03		6.6148e-03
+ 190	8.0505e-03		6.4426e-03
+ 195	7.7899e-03		6.3746e-03
+
+DatasetType.TRAIN
+nmae:	[0.09854013 0.16796093 0.30683443 0.51679108 0.73848113]
+nstd:	[0.13459063 0.16403793 0.2977068  0.4875919  0.90824019]
+r2:	[0.9793604819401761, 0.9587999121689607, 0.8737818842547485, 0.7096075561003012, 0.5051160601021522]
+
+DatasetType.TEST
+nmae:	[0.09001325 0.19971213 0.33892722 0.52829533 0.92231397]
+nstd:	[0.07394177 0.16386902 0.32482112 0.47463814 1.13167048]
+r2:	[0.9909846407228817, 0.9485076500970598, 0.8534204412436835, 0.6823484015672097, -0.019412122739394633]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.994     0.994     0.994       817
+         1.0      0.963     0.963     0.963       135
+
+    accuracy                          0.989       952
+   macro avg      0.978     0.978     0.978       952
+weighted avg      0.989     0.989     0.989       952
+
+
+[[812   5]
+ [  5 130]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.3043399  0.26510074 0.34270415 0.56572647 0.95427926]
+nstd:	[1.14699892 0.46305674 0.34600477 0.5237448  1.14886258]
+r2:	[0.18846994895679392, 0.7893607358820676, 0.8371139946066742, 0.6188390262865042, -0.06813543514658682]
+reconstructing autocorrelations from PC scores
+saving results
+
+CV Split: 6
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.5068		0.3307
+   2	0.1137		0.1320
+   4	0.0764		0.0775
+   6	0.0620		0.0691
+   8	0.0638		0.0755
+  10	0.0670		0.1129
+  12	0.0690		0.0964
+  14	0.0730		0.0768
+  16	0.0733		0.0810
+  18	0.0687		0.0673
+  20	0.0587		0.0651
+  22	0.0474		0.0632
+  24	0.0354		0.0568
+  26	0.0262		0.0343
+  28	0.0214		0.0338
+  30	0.0206		0.0333
+  32	0.0201		0.0341
+  34	0.0197		0.0341
+  36	0.0192		0.0329
+  38	0.0188		0.0331
+  40	0.0183		0.0332
+  42	0.0180		0.0324
+  44	0.0177		0.0324
+  46	0.0174		0.0324
+  48	0.0173		0.0324
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.998     0.997      7337
+         1.0      0.985     0.976     0.980      1227
+
+    accuracy                          0.994      8564
+   macro avg      0.991     0.987     0.989      8564
+weighted avg      0.994     0.994     0.994      8564
+
+
+[[7319   18]
+ [  30 1197]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.990     0.991     0.991       813
+         1.0      0.949     0.942     0.945       138
+
+    accuracy                          0.984       951
+   macro avg      0.970     0.967     0.968       951
+weighted avg      0.984     0.984     0.984       951
+
+
+[[806   7]
+ [  8 130]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	3.8150e-01		2.5972e-01
+   5	1.7792e-01		1.5911e-01
+  10	6.1214e-02		5.6847e-02
+  15	4.0766e-02		3.5530e-02
+  20	2.5021e-02		2.0092e-02
+  25	1.9492e-02		1.5408e-02
+  30	1.7926e-02		1.3340e-02
+  35	1.6169e-02		1.2410e-02
+  40	1.4848e-02		1.0806e-02
+  45	1.3943e-02		1.0229e-02
+  50	1.2532e-02		9.6389e-03
+  55	1.2859e-02		1.0862e-02
+  60	1.2780e-02		9.8150e-03
+  65	1.2446e-02		1.0845e-02
+  70	1.2554e-02		1.0779e-02
+  75	1.1636e-02		1.0198e-02
+  80	1.2177e-02		1.0096e-02
+  85	1.3284e-02		1.1335e-02
+  90	1.1480e-02		1.0334e-02
+  95	1.1407e-02		9.4348e-03
+ 100	1.1329e-02		1.0058e-02
+ 105	1.3394e-02		1.0358e-02
+ 110	1.0720e-02		9.3442e-03
+ 115	1.0334e-02		8.6166e-03
+ 120	9.8824e-03		9.7013e-03
+ 125	1.0206e-02		7.8468e-03
+ 130	9.6895e-03		7.4575e-03
+ 135	9.8348e-03		7.8058e-03
+ 140	8.5839e-03		7.3668e-03
+ 145	9.0566e-03		7.7296e-03
+ 150	8.4689e-03		7.7085e-03
+ 155	8.0420e-03		7.4473e-03
+ 160	8.7572e-03		7.2587e-03
+ 165	7.9778e-03		7.7695e-03
+ 170	8.6371e-03		6.9728e-03
+ 175	8.4957e-03		7.6989e-03
+ 180	7.9374e-03		7.7384e-03
+ 185	9.2590e-03		7.7126e-03
+ 190	8.8915e-03		7.1374e-03
+ 195	8.4087e-03		7.5937e-03
+
+DatasetType.TRAIN
+nmae:	[0.09402378 0.17792248 0.30574455 0.50448868 0.79085896]
+nstd:	[0.13702919 0.16436326 0.27546035 0.44044561 0.93214336]
+r2:	[0.9797955634456186, 0.956467058380121, 0.883858855510676, 0.7286744031407183, 0.4546714684415667]
+
+DatasetType.TEST
+nmae:	[0.08909079 0.19806408 0.3785541  0.60741224 0.87777877]
+nstd:	[0.08400131 0.21447043 0.36053202 0.62090897 1.18267273]
+r2:	[0.9886837912855538, 0.9318366308033217, 0.8092883519530752, 0.5518506143601671, 0.17704695741634346]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.990     0.991     0.991       813
+         1.0      0.949     0.942     0.945       138
+
+    accuracy                          0.984       951
+   macro avg      0.970     0.967     0.968       951
+weighted avg      0.984     0.984     0.984       951
+
+
+[[806   7]
+ [  8 130]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.33574071 0.28200573 0.39542523 0.64931845 0.91245554]
+nstd:	[1.11988234 0.52500747 0.37749499 0.70593332 1.23614412]
+r2:	[0.13685292411773586, 0.7156059195680953, 0.7820964947731897, 0.42987177832200485, 0.1586740654744886]
+reconstructing autocorrelations from PC scores
+saving results
+
+CV Split: 7
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.6682		0.4509
+   2	0.1194		0.1027
+   4	0.0707		0.0620
+   6	0.0749		0.0808
+   8	0.0784		0.0659
+  10	0.0810		0.0967
+  12	0.0804		0.0501
+  14	0.0804		0.0948
+  16	0.0814		0.0920
+  18	0.0766		0.1141
+  20	0.0687		0.0634
+  22	0.0605		0.0745
+  24	0.0498		0.0545
+  26	0.0407		0.0334
+  28	0.0354		0.0338
+  30	0.0350		0.0341
+  32	0.0342		0.0318
+  34	0.0339		0.0335
+  36	0.0335		0.0322
+  38	0.0330		0.0322
+  40	0.0327		0.0327
+  42	0.0324		0.0321
+  44	0.0320		0.0323
+  46	0.0319		0.0324
+  48	0.0317		0.0324
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.993     0.995     0.994      7337
+         1.0      0.972     0.957     0.964      1227
+
+    accuracy                          0.990      8564
+   macro avg      0.982     0.976     0.979      8564
+weighted avg      0.990     0.990     0.990      8564
+
+
+[[7303   34]
+ [  53 1174]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.998     0.990     0.994       813
+         1.0      0.944     0.986     0.965       138
+
+    accuracy                          0.989       951
+   macro avg      0.971     0.988     0.979       951
+weighted avg      0.990     0.989     0.990       951
+
+
+[[805   8]
+ [  2 136]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	2.4733e-01		1.5038e-01
+   5	1.0404e-01		8.8488e-02
+  10	5.4649e-02		4.8125e-02
+  15	3.4928e-02		2.7289e-02
+  20	2.3145e-02		1.7786e-02
+  25	1.8635e-02		1.5276e-02
+  30	1.7804e-02		1.3612e-02
+  35	1.5940e-02		1.0567e-02
+  40	1.4071e-02		9.7631e-03
+  45	1.5620e-02		1.0511e-02
+  50	1.2210e-02		8.9194e-03
+  55	1.2962e-02		1.0252e-02
+  60	1.4348e-02		9.6032e-03
+  65	1.2822e-02		8.4356e-03
+  70	1.2466e-02		8.3453e-03
+  75	1.3062e-02		8.8961e-03
+  80	1.3239e-02		9.3432e-03
+  85	1.3334e-02		1.0443e-02
+  90	1.2613e-02		9.4274e-03
+  95	1.1612e-02		1.3207e-02
+ 100	1.2042e-02		7.3134e-03
+ 105	1.1191e-02		6.8539e-03
+ 110	1.0463e-02		7.0241e-03
+ 115	1.1872e-02		7.2581e-03
+ 120	1.1008e-02		7.3098e-03
+ 125	9.8221e-03		6.8025e-03
+ 130	9.6540e-03		6.4750e-03
+ 135	9.6592e-03		5.9348e-03
+ 140	8.7776e-03		5.6750e-03
+ 145	9.3431e-03		5.7799e-03
+ 150	8.7170e-03		5.5877e-03
+ 155	8.7116e-03		5.6217e-03
+ 160	8.6582e-03		5.8465e-03
+ 165	8.7865e-03		5.8531e-03
+ 170	8.1064e-03		5.6142e-03
+ 175	8.9259e-03		5.7829e-03
+ 180	8.3658e-03		5.7332e-03
+ 185	8.5932e-03		5.6635e-03
+ 190	8.4202e-03		5.7845e-03
+ 195	8.7561e-03		5.6473e-03
+
+DatasetType.TRAIN
+nmae:	[0.094533   0.1715038  0.30261479 0.51193947 0.80875587]
+nstd:	[0.13559579 0.16633076 0.28462787 0.46119632 1.03276144]
+r2:	[0.9799569483464627, 0.9573056479316004, 0.8815052670749597, 0.7209841535510175, 0.39035871336418404]
+
+DatasetType.TEST
+nmae:	[0.08584542 0.16460247 0.34261148 0.54942882 0.96567213]
+nstd:	[0.07571641 0.15646466 0.30645152 0.53498975 1.14459021]
+r2:	[0.9903574307095271, 0.961696248284256, 0.8542106069081936, 0.6258147330684618, 0.09707148733265447]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.998     0.990     0.994       813
+         1.0      0.944     0.986     0.965       138
+
+    accuracy                          0.989       951
+   macro avg      0.971     0.988     0.979       951
+weighted avg      0.990     0.989     0.990       951
+
+
+[[805   8]
+ [  2 136]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.30809063 0.27290179 0.39844666 0.64086357 1.0209546 ]
+nstd:	[1.02285439 0.57319092 0.46346936 0.74374218 1.20310283]
+r2:	[0.3246886971710221, 0.7038751540665106, 0.7351567763810942, 0.3667682911985569, 0.025406668942342447]
+reconstructing autocorrelations from PC scores
+saving results
+
+CV Split: 8
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.3803		0.2390
+   2	0.0987		0.0837
+   4	0.0634		0.0628
+   6	0.0657		0.0601
+   8	0.0656		0.0702
+  10	0.0723		0.0654
+  12	0.0744		0.0708
+  14	0.0731		0.0641
+  16	0.0731		0.0727
+  18	0.0621		0.0593
+  20	0.0577		0.0750
+  22	0.0484		0.0558
+  24	0.0357		0.0447
+  26	0.0254		0.0337
+  28	0.0206		0.0282
+  30	0.0197		0.0278
+  32	0.0190		0.0281
+  34	0.0187		0.0285
+  36	0.0184		0.0272
+  38	0.0179		0.0270
+  40	0.0175		0.0274
+  42	0.0172		0.0268
+  44	0.0168		0.0269
+  46	0.0166		0.0268
+  48	0.0165		0.0268
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.998     0.997      7347
+         1.0      0.986     0.975     0.981      1217
+
+    accuracy                          0.995      8564
+   macro avg      0.991     0.987     0.989      8564
+weighted avg      0.994     0.995     0.994      8564
+
+
+[[7330   17]
+ [  30 1187]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.995     0.994     0.994       803
+         1.0      0.966     0.973     0.970       148
+
+    accuracy                          0.991       951
+   macro avg      0.981     0.983     0.982       951
+weighted avg      0.991     0.991     0.991       951
+
+
+[[798   5]
+ [  4 144]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	3.4397e-01		1.8960e-01
+   5	1.7252e-01		1.3367e-01
+  10	6.6360e-02		5.3452e-02
+  15	4.0536e-02		2.8512e-02
+  20	2.5305e-02		1.8261e-02
+  25	1.9011e-02		1.5779e-02
+  30	1.6486e-02		1.0765e-02
+  35	1.4517e-02		9.4645e-03
+  40	1.5098e-02		8.7883e-03
+  45	1.4159e-02		1.0374e-02
+  50	1.3683e-02		8.6207e-03
+  55	1.2463e-02		9.8676e-03
+  60	1.2562e-02		8.4516e-03
+  65	1.2722e-02		8.9343e-03
+  70	1.3299e-02		8.9254e-03
+  75	1.3033e-02		9.9383e-03
+  80	1.2980e-02		8.6631e-03
+  85	1.2760e-02		9.1265e-03
+  90	1.1924e-02		9.5360e-03
+  95	1.2356e-02		8.6618e-03
+ 100	1.1379e-02		8.8937e-03
+ 105	1.0962e-02		8.2346e-03
+ 110	1.0497e-02		1.0659e-02
+ 115	9.8016e-03		7.7751e-03
+ 120	1.0009e-02		8.5746e-03
+ 125	9.6598e-03		6.7809e-03
+ 130	9.4407e-03		7.8124e-03
+ 135	9.6229e-03		7.3827e-03
+ 140	8.5325e-03		6.8813e-03
+ 145	8.8808e-03		7.0018e-03
+ 150	8.7760e-03		7.1895e-03
+ 155	7.9967e-03		7.3499e-03
+ 160	8.4746e-03		6.9014e-03
+ 165	8.5220e-03		7.4767e-03
+ 170	9.3080e-03		6.4106e-03
+ 175	8.1512e-03		7.2159e-03
+ 180	8.6072e-03		6.8591e-03
+ 185	8.4462e-03		6.1691e-03
+ 190	8.1634e-03		6.1062e-03
+ 195	8.2271e-03		6.0605e-03
+
+DatasetType.TRAIN
+nmae:	[0.09461059 0.18043682 0.30210099 0.4965927  0.7815169 ]
+nstd:	[0.13211405 0.17224401 0.27557265 0.45623805 0.98671434]
+r2:	[0.9807254693196784, 0.9536595879883953, 0.884759269244265, 0.7260934559708361, 0.44682915223640873]
+
+DatasetType.TEST
+nmae:	[0.10082052 0.21956993 0.42135966 0.58824264 0.96185427]
+nstd:	[0.16204109 0.24516519 0.42187854 0.60227629 1.17323548]
+r2:	[0.972132468110915, 0.9196152082828813, 0.7477485573816973, 0.5496255809583201, 0.16931854953696923]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.995     0.994     0.994       803
+         1.0      0.966     0.973     0.970       148
+
+    accuracy                          0.991       951
+   macro avg      0.981     0.983     0.982       951
+weighted avg      0.991     0.991     0.991       951
+
+
+[[798   5]
+ [  4 144]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.25057397 0.27932929 0.44533245 0.61896147 0.9724637 ]
+nstd:	[0.89630736 0.47912776 0.49336755 0.67460891 1.18904072]
+r2:	[0.4275389654837036, 0.775148196555047, 0.684960495278806, 0.4561539933603228, 0.1660123168599963]
+reconstructing autocorrelations from PC scores
+saving results
+
+CV Split: 9
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.5724		0.3394
+   2	0.1090		0.0886
+   4	0.0685		0.0789
+   6	0.0672		0.0631
+   8	0.0749		0.0797
+  10	0.0796		0.0732
+  12	0.0756		0.0860
+  14	0.0736		0.0856
+  16	0.0698		0.0847
+  18	0.0653		0.0680
+  20	0.0588		0.0663
+  22	0.0477		0.0461
+  24	0.0368		0.0365
+  26	0.0258		0.0290
+  28	0.0213		0.0230
+  30	0.0207		0.0232
+  32	0.0201		0.0222
+  34	0.0190		0.0218
+  36	0.0189		0.0207
+  38	0.0183		0.0209
+  40	0.0180		0.0204
+  42	0.0176		0.0204
+  44	0.0173		0.0203
+  46	0.0170		0.0204
+  48	0.0169		0.0204
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.996     0.997     0.997      7349
+         1.0      0.983     0.979     0.981      1215
+
+    accuracy                          0.995      8564
+   macro avg      0.990     0.988     0.989      8564
+weighted avg      0.995     0.995     0.995      8564
+
+
+[[7328   21]
+ [  26 1189]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.995     0.998     0.996       801
+         1.0      0.986     0.973     0.980       150
+
+    accuracy                          0.994       951
+   macro avg      0.991     0.985     0.988       951
+weighted avg      0.994     0.994     0.994       951
+
+
+[[799   2]
+ [  4 146]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	2.1621e-01		1.1401e-01
+   5	9.9802e-02		8.7524e-02
+  10	5.6796e-02		4.9391e-02
+  15	3.6135e-02		3.6328e-02
+  20	2.2272e-02		2.3927e-02
+  25	1.8121e-02		1.8655e-02
+  30	1.5840e-02		1.5502e-02
+  35	1.4506e-02		1.4850e-02
+  40	1.2197e-02		1.1910e-02
+  45	1.2434e-02		1.5033e-02
+  50	1.1987e-02		1.1786e-02
+  55	1.2371e-02		1.1791e-02
+  60	1.3149e-02		1.1929e-02
+  65	1.2119e-02		1.1933e-02
+  70	1.2209e-02		1.0681e-02
+  75	1.0818e-02		1.2648e-02
+  80	1.1462e-02		1.0740e-02
+  85	1.2308e-02		1.2504e-02
+  90	1.0635e-02		1.0166e-02
+  95	1.0796e-02		1.1085e-02
+ 100	1.0091e-02		9.1588e-03
+ 105	9.7288e-03		1.1508e-02
+ 110	1.0390e-02		9.4311e-03
+ 115	9.3742e-03		1.0454e-02
+ 120	9.1261e-03		9.9414e-03
+ 125	8.2728e-03		9.2025e-03
+ 130	8.6154e-03		9.5263e-03
+ 135	7.7156e-03		9.4440e-03
+ 140	7.7244e-03		9.5096e-03
+ 145	8.2749e-03		8.9953e-03
+ 150	8.4143e-03		7.6914e-03
+ 155	7.6906e-03		8.0464e-03
+ 160	8.0504e-03		9.4170e-03
+ 165	8.3483e-03		9.3258e-03
+ 170	7.8812e-03		9.0701e-03
+ 175	7.4330e-03		9.3107e-03
+ 180	8.0980e-03		9.4227e-03
+ 185	8.4802e-03		9.3295e-03
+ 190	7.6520e-03		9.0308e-03
+ 195	7.9473e-03		9.5052e-03
+
+DatasetType.TRAIN
+nmae:	[0.09981962 0.18201285 0.29804453 0.50583993 0.81702848]
+nstd:	[0.13180422 0.17009891 0.27255365 0.46138507 1.03305934]
+r2:	[0.9799737465805587, 0.953817847396284, 0.8862111668075583, 0.7230080131309651, 0.3841530949554308]
+
+DatasetType.TEST
+nmae:	[0.11975256 0.21281505 0.38736489 0.56486011 0.99574094]
+nstd:	[0.12714042 0.20357506 0.4000174  0.54520328 1.43489635]
+r2:	[0.9771718516368921, 0.9334716442078975, 0.7966177752037925, 0.6109488564424752, -0.31013488190198846]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.995     0.998     0.996       801
+         1.0      0.986     0.973     0.980       150
+
+    accuracy                          0.994       951
+   macro avg      0.991     0.985     0.988       951
+weighted avg      0.994     0.994     0.994       951
+
+
+[[799   2]
+ [  4 146]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.20208706 0.23804737 0.39008274 0.57542733 1.00356964]
+nstd:	[0.77164658 0.33675361 0.40671507 0.56655044 1.47005064]
+r2:	[0.5609444056514016, 0.8705182180238669, 0.7923216240745026, 0.5880973297499257, -0.3395836353549546]
+reconstructing autocorrelations from PC scores
+saving results
+
+CV Split: 10
+
+building classifier model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=5, bias=True)
+  )
+  (predict): Linear(in_features=5, out_features=1, bias=True)
+)
+
+number of parameters: 102
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	0.5195		0.2935
+   2	0.1085		0.1067
+   4	0.0728		0.0656
+   6	0.0765		0.0543
+   8	0.0794		0.0693
+  10	0.0794		0.1011
+  12	0.0856		0.0738
+  14	0.0782		0.0776
+  16	0.0680		0.0602
+  18	0.0675		0.0552
+  20	0.0603		0.0602
+  22	0.0488		0.0462
+  24	0.0354		0.0304
+  26	0.0251		0.0253
+  28	0.0203		0.0230
+  30	0.0195		0.0229
+  32	0.0188		0.0219
+  34	0.0184		0.0217
+  36	0.0182		0.0214
+  38	0.0176		0.0215
+  40	0.0172		0.0213
+  42	0.0168		0.0213
+  44	0.0165		0.0211
+  46	0.0163		0.0210
+  48	0.0162		0.0210
+
+-------------------------
+
+DatasetType.TRAIN
+              precision    recall  f1-score   support
+
+         0.0      0.997     0.997     0.997      7327
+         1.0      0.981     0.980     0.981      1237
+
+    accuracy                          0.994      8564
+   macro avg      0.989     0.988     0.989      8564
+weighted avg      0.994     0.994     0.994      8564
+
+
+[[7304   23]
+ [  25 1212]]
+
+-------------------------
+
+DatasetType.TEST
+              precision    recall  f1-score   support
+
+         0.0      0.994     0.998     0.996       823
+         1.0      0.984     0.961     0.972       128
+
+    accuracy                          0.993       951
+   macro avg      0.989     0.979     0.984       951
+weighted avg      0.993     0.993     0.993       951
+
+
+[[821   2]
+ [  5 123]]
+getting heterogeneous samples for regression model building
+doing PCA and prepping the train/test split for regression model
+building regression model
+
+Net(
+  (hidden_layers): ModuleList(
+    (0): Linear(in_features=18, out_features=12, bias=False)
+    (1): Linear(in_features=12, out_features=12, bias=False)
+    (2): Linear(in_features=12, out_features=12, bias=False)
+  )
+  (dropouts): ModuleList()
+  (batch_norms): ModuleList(
+    (0): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (acts): ModuleList(
+    (0): GELU()
+    (1): GELU()
+    (2): GELU()
+  )
+  (predict): Linear(in_features=12, out_features=5, bias=True)
+)
+
+number of parameters: 641
+
+Epoch	Train Loss	Validation Loss
+----------------------------------------
+   0	2.6357e-01		1.7259e-01
+   5	1.1722e-01		1.0885e-01
+  10	5.5082e-02		5.5034e-02
+  15	3.3754e-02		3.5090e-02
+  20	2.1851e-02		2.0897e-02
+  25	1.8373e-02		1.6347e-02
+  30	1.6685e-02		1.5227e-02
+  35	1.5356e-02		1.3075e-02
+  40	1.4713e-02		1.2530e-02
+  45	1.4599e-02		1.1988e-02
+  50	1.3251e-02		1.0891e-02
+  55	1.2782e-02		1.0208e-02
+  60	1.1932e-02		1.1046e-02
+  65	1.1542e-02		1.0664e-02
+  70	1.4626e-02		1.0338e-02
+  75	1.1928e-02		9.4521e-03
+  80	1.3157e-02		1.0254e-02
+  85	1.1505e-02		9.4022e-03
+  90	1.1568e-02		1.0771e-02
+  95	1.1484e-02		1.2154e-02
+ 100	1.1465e-02		9.8590e-03
+ 105	1.1053e-02		9.9907e-03
+ 110	1.0108e-02		9.2668e-03
+ 115	9.6394e-03		8.1772e-03
+ 120	9.0725e-03		8.4599e-03
+ 125	1.0188e-02		8.9672e-03
+ 130	8.6193e-03		8.5992e-03
+ 135	7.8235e-03		7.6983e-03
+ 140	9.4351e-03		7.7482e-03
+ 145	9.1402e-03		7.9025e-03
+ 150	7.8685e-03		7.7837e-03
+ 155	8.0503e-03		7.7614e-03
+ 160	8.1964e-03		7.6226e-03
+ 165	8.1516e-03		7.8082e-03
+ 170	7.9776e-03		7.7367e-03
+ 175	8.8848e-03		7.8343e-03
+ 180	8.0479e-03		7.6728e-03
+ 185	8.1066e-03		7.8293e-03
+ 190	8.1375e-03		7.7221e-03
+ 195	9.0175e-03		7.9043e-03
+
+DatasetType.TRAIN
+nmae:	[0.0931753  0.17042053 0.32321096 0.50100141 0.8065828 ]
+nstd:	[0.11379101 0.16956227 0.29989397 0.45737766 0.99916714]
+r2:	[0.9841164742125983, 0.9565739558989232, 0.8676570256692299, 0.7237396200387184, 0.41269050591784606]
+
+DatasetType.TEST
+nmae:	[0.12021084 0.21243617 0.28878898 0.53164466 0.89031477]
+nstd:	[0.27853919 0.20768474 0.26253366 0.47170138 1.09478802]
+r2:	[0.9329964555996748, 0.9369226107957895, 0.886559337504166, 0.6829439376172715, 0.2433117268290853]
+quantifying full chained-ann accuracy
+predicting heterogeneous for test set
+
+-------------------------
+
+              precision    recall  f1-score   support
+
+         0.0      0.994     0.998     0.996       823
+         1.0      0.984     0.961     0.972       128
+
+    accuracy                          0.993       951
+   macro avg      0.989     0.979     0.984       951
+weighted avg      0.993     0.993     0.993       951
+
+
+[[821   2]
+ [  5 123]]
+getting heterogeneous samples for regression from test set
+making pc score predictions
+nmae:	[0.18197055 0.22535122 0.28852766 0.52280445 0.89261637]
+nstd:	[0.71535615 0.29777272 0.26365842 0.48269099 1.08291226]
+r2:	[0.6379688151327069, 0.9022172223720886, 0.8856599518098824, 0.6833248968638912, 0.24275360070675522]
+reconstructing autocorrelations from PC scores
+saving results
+
+
+
+CV TEST ACCURACY REPORT:
+	number of folds:		10
+	mean nmae by PC score:	[0.23906181 0.25270537 0.36737817 0.60249269 0.94312734]
+	mean nstd by PC score:	[0.87152785 0.41371231 0.37036174 0.60765295 1.18965066]
+	mean r2 by PC score:	[0.45219688 0.81737216 0.80169642 0.52617116 0.10751291]
+
+
+
+
+Process finished with exit code 0

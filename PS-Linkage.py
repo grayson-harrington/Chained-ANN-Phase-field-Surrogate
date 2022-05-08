@@ -1,232 +1,164 @@
-import math
 import pickle
 import h5py
 import numpy as np
 
-from DatasetType import DatasetType
+from NN_classifier_main import build_classifier
+from NN_regressor_main import build_regressor
 
-import torch
+from sklearn.model_selection import KFold
+from sklearn.decomposition import PCA
 from sklearn.metrics import mean_absolute_error, classification_report, confusion_matrix
 
 import matplotlib.pyplot as plt
 
-classification_file_path = "_Classification/_classification_model"
-regression_file_path = "_Regression/_regression_model"
 
-train_location = "datasets/train.hdf5"
-validate_location = "datasets/validate.hdf5"
-test_location = "datasets/test.hdf5"
-
-dataset = DatasetType.TEST
-dataset_compare = DatasetType.TRAIN
-n_scores = 5
-
-
-def main():
-    # load in train data
-    with h5py.File(train_location, "r") as f:
-        train_classes = f["n_phases"][...] - 1
-        train_params = f["parameters"][...][:, 0:18]
-        train_scores = f["pc_scores"][...][:, :5]
-        train_corrs = f["correlations"][...]
-        train_micros = f["curated_micros"][...]
-
-    # load in validation data
-    with h5py.File(validate_location, "r") as f:
-        validate_classes = f["n_phases"][...] - 1
-        validate_params = f["parameters"][...][:, 0:18]
-        validate_scores = f["pc_scores"][...][:, :5]
-        validate_corrs = f["correlations"][...]
-        validate_micros = f["curated_micros"][...]
-
-    # load in test data
-    with h5py.File(test_location, "r") as f:
-        test_classes = f["n_phases"][...] - 1
-        test_params = f["parameters"][...][:, 0:18]
-        test_scores = f["pc_scores"][...][:, :5]
-        test_corrs = f["correlations"][...]
-        test_micros = f["curated_micros"][...]
-
-    # get dataset values of interest
-    if dataset is DatasetType.TRAIN:
-        classes = train_classes
-        params = train_params
-        scores = train_scores
-        corrs = train_corrs
-        micros = train_micros
-    elif dataset is DatasetType.VALIDATE:
-        classes = validate_classes
-        params = validate_params
-        scores = validate_scores
-        corrs = validate_corrs
-        micros = validate_micros
+def cv_chained_ann(parameters, homonohomo, correlations, n_folds=1, random_seed=0, save_tests=False,
+                   classifier_kwargs=None, regressor_kwargs=None):
+    # Prepare k-fold data splits
+    if n_folds >= 2:
+        kf = KFold(n_splits=n_folds, shuffle=True, random_state=random_seed)
+        cv_splits = kf.split(parameters)
     else:
-        classes = test_classes
-        params = test_params
-        scores = test_scores
-        corrs = test_corrs
-        micros = test_micros
+        inds = np.arange(len(parameters))
+        np.random.seed(random_seed)
+        np.random.shuffle(inds)
+        cutoff = int(len(inds) * 0.80)
+        cv_splits = [(inds[:cutoff], inds[cutoff:])]
 
-    # load in the classification and regression models
-    classification_model = pickle.load(open(classification_file_path + ".p", "rb"))
-    regression_model = pickle.load(open(regression_file_path + ".p", "rb"))
+    # loop through cv_splits and build/test model(s)
+    cv_tst_nmaes = []
+    cv_tst_nstds = []
+    cv_tst_r2s = []
 
-    #
-    #
-    # perform homogeneous/heterogeneous classification
-    #
-    #
+    split_index = 0
+    for train_indices, test_indices in cv_splits:
+        split_index = split_index + 1
 
-    # apply normalization to process parameters
-    params_norm = classification_model.datasets.apply_input_normalization(params)
-    params_norm = torch.from_numpy(params_norm).float()
+        print(f"\nCV Split: {split_index}\n")
 
-    # get classification predictions and binarize the continuous output
-    classes_pred = classification_model.net(params_norm).detach().numpy()
-    classes_pred = np.round(classes_pred)
+        ### CLASSIFICATION MODEL
+        print("building classifier model")
+        classifier_mlp = build_classifier(parameters, homonohomo, train_indices, test_indices, **classifier_kwargs)
 
-    # print classification report and confusion matrix (validation dataset accuracy confirmed)
-    print()
-    print(dataset)
-    print(classification_report(classes, classes_pred))
-    print()
-    print(confusion_matrix(classes, classes_pred))
-    print()
+        print("getting heterogeneous samples for regression model building")
+        hetero = np.where(homonohomo == 1)[0]
+        train_indices_hetero = np.intersect1d(hetero, train_indices)
+        test_indices_hetero = np.intersect1d(hetero, test_indices)
 
-    #
-    #
-    # perform pc score prediction on "heterogeneous" samples
-    #
-    #
+        ### DO PCA
+        print("doing PCA and prepping the train/test split for regression model")
+        # need to get PC scores for both train and test sets
+        corrs_train = correlations[train_indices_hetero]
+        corrs_test = correlations[test_indices_hetero]
 
-    # Retrieve the heterogeneous sample process parameters and pc scores based on the classification model output
-    indices = np.where(classes_pred == 1)[0]
-    hetero_params = params[indices]
-    hetero_scores = scores[indices]
-    hetero_corrs = corrs[indices]
-    hetero_micros = micros[indices]
-
-    # apply normalization to process parameters
-    hetero_params_norm = regression_model.datasets.apply_input_normalization(hetero_params)
-    hetero_params_norm = torch.from_numpy(hetero_params_norm).float()
-
-    # apply normalization to true pc_scores
-    hetero_scores_norm = regression_model.datasets.apply_output_normalization(hetero_scores)
-
-    # get PC score predictions
-    hetero_scores_pred = regression_model.net(hetero_params_norm).detach().numpy()
-
-    # Report model accuracy (validation dataset accuracy confirmed)
-    acc = mean_absolute_error(hetero_scores_norm, hetero_scores_pred, multioutput="raw_values")
-    mean = np.mean(acc)
-    std = np.std(acc)
-
-    print()
-    print("PC score prediction accuracy WITH classification error")
-    print("NMAE: %.4f" % mean)
-    print("STDNAE: %.4f" % std)
-
-    # just checking validation set on regression to make sure that all is running as it should be.
-    # run regression on new samples and display accuracy with parity plots and NMAE measures
-    _, mae_v_mean, mae_v_std = regression_model.model_accuracy(
-        dataset_type=dataset, accuracy_measure=mean_absolute_error
-    )
-    print()
-    print("PC score prediction accuracy WITHOUT classification error")
-    print("NMAE: %.4f" % mae_v_mean)
-    print("STDNAE: %.4f" % mae_v_std)
-
-    with h5py.File("_Regression/score_predictions_and_truth.hdf5", "a") as f:
-        train_scores_pred = f["train_scores_pred"][...]
-        train_scores_true = f["train_scores"][...]
-
-        print(train_scores_pred.shape)
-        print(train_scores_true.shape)
-
-    # plot correlations
-    rows = 1
-    cols = 5
-    fig, axs = plt.subplots(rows, cols)
-    for i in range(rows * cols):
-
-        col = i % cols
-        row = math.floor(i / cols)
-        axs[col].set_box_aspect(1)
-        axs[col].scatter(train_scores_true[:, i], train_scores_pred[:, i], color="red", alpha=0.5, label="Train")
-        axs[col].scatter(hetero_scores_norm[:, i], hetero_scores_pred[:, i], color="blue", alpha=0.5, label="Test")
-        axs[col].plot([-1, 1], [-1, 1], "k")
-
-        axs[col].set_xlim(left=-1.1, right=1.1)
-        axs[col].set_ylim(bottom=-1.1, top=1.1)
-
-        axs[col].set_title("PC" + str(i + 1), fontsize=12)
-
-        if i == 0:
-            axs[col].legend()
-
-    fig.text(0.5, 0.05, "Truth", ha="center", fontsize=12)
-    fig.text(0.05, 0.5, "Prediction", va="center", rotation="vertical", fontsize=12)
-    fig.text(0.5, 0.95, "PC Score Prediction for Heterogeneous Classified Samples", ha="center", fontsize=14)
-
-    # unscale the PC score predictions and compare with truth
-    hetero_scores_true = hetero_scores
-    hetero_scores_pred = regression_model.datasets.undo_output_normalization(hetero_scores_pred)
-
-    # unscale the PC score TRAIN predictions and compare with truth
-    hetero_scores_train_true = regression_model.datasets.undo_output_normalization(train_scores_true)
-    hetero_scores_train_pred = regression_model.datasets.undo_output_normalization(train_scores_pred)
-
-    # plot correlations
-    rows = 1
-    cols = 5
-    fig2, axs2 = plt.subplots(rows, cols)
-    for i in range(rows * cols):
-
-        col = i % cols
-        row = math.floor(i / cols)
-        axs2[col].set_box_aspect(1)
-        axs2[col].scatter(
-            hetero_scores_train_true[:, i], hetero_scores_train_pred[:, i], color="red", alpha=0.5, label="Train"
+        pca = PCA(
+            svd_solver='full',
+            n_components=5,
+            random_state=random_seed,
         )
-        axs2[col].scatter(hetero_scores_true[:, i], hetero_scores_pred[:, i], color="blue", alpha=0.5, label="Test")
+        scores_train = pca.fit_transform(corrs_train.reshape(len(corrs_train), -1))
+        scores_test = pca.transform(corrs_test.reshape(len(corrs_test), -1))
 
-        mins1 = np.min(np.concatenate((hetero_scores_true[:, i], hetero_scores_pred[:, i])), axis=None)
-        maxs1 = np.max(np.concatenate((hetero_scores_true[:, i], hetero_scores_pred[:, i])), axis=None)
-        mins2 = np.min(np.concatenate((hetero_scores_train_true[:, i], hetero_scores_train_pred[:, i])), axis=None)
-        maxs2 = np.max(np.concatenate((hetero_scores_train_true[:, i], hetero_scores_train_pred[:, i])), axis=None)
+        # Use PC scores to train and test model
+        pc_scores = np.zeros((len(parameters), 5))
+        pc_scores[train_indices_hetero] = scores_train
+        pc_scores[test_indices_hetero] = scores_test
 
-        mins = min(mins1, mins2)
-        maxs = max(maxs1, maxs2)
+        ### REGRESSION MODEL
+        print("building regression model")
+        regression_mlp = build_regressor(parameters, pc_scores, train_indices_hetero, test_indices_hetero,
+                                         **regressor_kwargs)
 
-        axs2[col].plot([mins, maxs], [mins, maxs], "k")
+        ### CHAINED-ANN
+        print("quantifying full chained-ann accuracy")
+        print("predicting heterogeneous for test set")
+        homonohomo_pred = classifier_mlp.predict(parameters[test_indices], scale_input=True)
 
-        axs2[col].set_xlim(left=mins + mins / 10, right=maxs + maxs / 10)
-        axs2[col].set_ylim(bottom=mins + mins / 10, top=maxs + maxs / 10)
+        print()
+        print("-" * 25)
+        print()
+        print(classification_report(homonohomo[test_indices], homonohomo_pred, digits=3))
+        print()
+        print(confusion_matrix(homonohomo[test_indices], homonohomo_pred))
 
-        axs2[col].set_title("PC" + str(i + 1), fontsize=12)
+        print("getting heterogeneous samples for regression from test set")
+        hetero = np.where(homonohomo_pred == 1)[0]
+        indices_hetero = test_indices[hetero]
+        params_hetero = parameters[indices_hetero]
+        corrs_hetero_true = correlations[indices_hetero]
 
-        if i == 0:
-            axs2[col].legend()
-        if col != 0:
-            axs2[col].tick_params(left=False)
-            axs2[col].tick_params(labelleft=False)
+        # transform corrs to pc_sores
+        scores_hetero_true = pca.transform(corrs_hetero_true.reshape(len(corrs_hetero_true), -1))
 
-    fig2.text(0.5, 0.05, "Truth", ha="center", fontsize=12)
-    fig2.text(0.05, 0.5, "Prediction", va="center", rotation="vertical", fontsize=12)
-    fig2.text(0.5, 0.95, "PC Score Prediction for Heterogeneous Classified Samples", ha="center", fontsize=14)
+        print("making pc score predictions")
+        scores_hetero_pred = regression_mlp.predict(params_hetero, scale_input=True, unscale_output=True)
 
-    # plt.show()
+        _, nmae_tst, nstd_tst, r2_tst = regression_mlp.nMAE_nSTD_r2(scores_hetero_true, scores_hetero_pred,
+                                                                    print_metrics=True)
 
-    # save file with predicted scores, true scores, parameters, correlations, micros
-    with h5py.File("_PS Linkage/PS-Linkage_RESULTS_final.hdf5", "a") as f:
-        f.create_dataset("pc_scores_true", data=hetero_scores_true, compression="gzip")
-        f.create_dataset("pc_scores_pred", data=hetero_scores_pred, compression="gzip")
-        f.create_dataset("parameters", data=hetero_params, compression="gzip")
-        f.create_dataset("correlations_true", data=hetero_corrs, compression="gzip")
-        f.create_dataset("curated_micros_true", data=hetero_micros, compression="gzip")
+        cv_tst_nmaes.append(nmae_tst)
+        cv_tst_nstds.append(nstd_tst)
+        cv_tst_r2s.append(r2_tst)
 
+        # transform predicted pc scores back to autocorrelations
+        print("reconstructing autocorrelations from PC scores")
+        corrs_hetero_pred = []
+        for scores in scores_hetero_pred:
+            corr = np.dot(scores, pca.components_) + pca.mean_
+            corr = corr.reshape(corrs_test[0].shape)
+            corrs_hetero_pred.append(corr)
+
+        if save_tests:
+            print("saving results")
+            with h5py.File(f"_PS Linkage/{n_folds}-fold chained-ann results.hdf5", 'a') as f:
+                grp = f.create_group(f"cv{split_index}")
+
+                grp_classifier = grp.create_group("classifier")
+                grp_classifier.create_dataset("parameters", data=parameters, compression="gzip")
+                grp_classifier.create_dataset("homonohomo_true", data=homonohomo, compression="gzip")
+                grp_classifier.create_dataset("homonohomo_pred", data=homonohomo_pred, compression="gzip")
+
+                grp_regressor = grp.create_group("regressor")
+                grp_regressor.create_dataset("parameters", data=params_hetero, compression="gzip")
+                grp_regressor.create_dataset("scores_true", data=scores_hetero_true, compression="gzip")
+                grp_regressor.create_dataset("scores_pred", data=scores_hetero_pred, compression="gzip")
+                grp_regressor.create_dataset("corrs_true", data=corrs_hetero_true, compression="gzip")
+                grp_regressor.create_dataset("corrs_pred", data=corrs_hetero_pred, compression="gzip")
+
+    print("\n" * 2)
+    print("CV TEST ACCURACY REPORT:")
+    print(f"\tnumber of folds:\t\t{n_folds}")
+    print(f"\tmean nmae by PC score:\t{np.mean(cv_tst_nmaes, axis=0)}")
+    print(f"\tmean nstd by PC score:\t{np.mean(cv_tst_nstds, axis=0)}")
+    print(f"\tmean r2 by PC score:\t{np.mean(cv_tst_r2s, axis=0)}")
+    print("\n" * 2)
+
+
+dataset_path = "_datasets/dataset.hdf5"
+
+regressor_epochs = 200  # 200 for paper
+classifier_epochs = 50  # 50 for paper
+cv_folds = 10  # 10 for paper
+rnd_seed = 0
+plot_progress = False
+print_metrics = True
+save_cv_tests = True
 
 if __name__ == "__main__":
-    main()
+    # load in data
+    with h5py.File(dataset_path, "r") as f:
+        print(list(f.keys()))
+        parameters = f["parameters"][...][:, 0:18]
+        homonohomo = f["n_phases"][...] - 1
+        correlations = f["correlations"][...]
 
-    plt.show()
+    # perform k-fold cv for the full chained-ann
+    cv_chained_ann(parameters, homonohomo, correlations, n_folds=cv_folds, random_seed=rnd_seed,
+                   save_tests=save_cv_tests,
+                   classifier_kwargs={"epochs": classifier_epochs,
+                                      "plot_loss_error": plot_progress,
+                                      "print_metrics": print_metrics},
+                   regressor_kwargs={"epochs": regressor_epochs,
+                                     "plot_loss_error": plot_progress,
+                                     "print_metrics": print_metrics})
+

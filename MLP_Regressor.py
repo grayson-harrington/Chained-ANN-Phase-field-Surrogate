@@ -151,6 +151,22 @@ class MLPRegressor:
 
         return nae, nmae, nstd, r2
 
+    def predict(self, model_input, scale_input=False, unscale_output=False):
+
+        if scale_input:
+            model_input = self.datasets.apply_input_normalization(model_input)
+
+        if isinstance(model_input, np.ndarray):
+            model_input = torch.from_numpy(model_input).float()
+
+        # make prediction
+        y_pred = self.net(model_input).detach().numpy()
+        
+        if unscale_output:
+            y_pred = self.datasets.undo_output_normalization(y_pred)
+
+        return y_pred
+
     def model_accuracy(self, dataset_type=DatasetType.TRAIN, print_report=False, unscale_output=False):
 
         loader = self.get_loader(dataset_type)

@@ -124,12 +124,16 @@ class MLPClassifier:
 
         return running_loss / len(loader.dataset), mean_acc
 
-    def predict(self, dataset_type=DatasetType.TRAIN):
-        loader = self.get_loader(dataset_type)
-        if loader is None:
-            return -1
+    def predict(self, model_input, scale_input=False):
+        
+        if scale_input:
+            model_input = self.datasets.apply_input_normalization(model_input)
 
-        y_pred = self.net(loader.dataset.input).detach().numpy()
+        if isinstance(model_input, np.ndarray):
+            model_input = torch.from_numpy(model_input).float()
+
+        # make prediction
+        y_pred = self.net(model_input).detach().numpy()
 
         # This is for classification purposes, round to nearest integer before accuracy measure
         y_pred = np.round(y_pred)
@@ -174,7 +178,7 @@ class MLPClassifier:
         if loader is None:
             return -1
 
-        y = loader.dataset.outputc
+        y = loader.dataset.output
         y_pred = self.net(loader.dataset.input).detach().numpy()
 
         return y, y_pred, accuracy_measure(y, y_pred)
